@@ -1,4 +1,4 @@
-﻿using RPGTestC.Achievements;
+using RPGTestC.Achievements;
 using RPGTestC.Events;
 using RPGTestC.Locations;
 using RPGTestC.Quests;
