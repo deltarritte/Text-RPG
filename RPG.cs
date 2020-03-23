@@ -7,6 +7,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+/*/
+ * Made by deltarritte
+ * for no reason whatsoever
+ * 
+ * plz do knot steel
+ * i wowked weally hawd on whis uwu
+ * 
+ * Ah, crap, now I have a taste of shit in my mouth
+ * Well, doing mistakes is my job anyway, so I have no room to complain.
+/*/
+
 namespace RPGTestCBuildA
 {
     public class RPG
