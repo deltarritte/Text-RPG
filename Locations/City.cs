@@ -56,7 +56,7 @@ namespace RPGTestC.Locations
             RPG.Fancies();
             Console.Clear();
 
-            //Dialogue("     /o[+]o|     _[T]_" +
+            //RPG.Dialogue("     /o[+]o|     _[T]_" +
             //       "\n     |T=n=T|     |=n=|", ConsoleColor.White, true);
 
             if (!wasInCity)

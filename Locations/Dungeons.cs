@@ -12,18 +12,21 @@ namespace RPGTestC.Locations
         static int _roomIter;                                   // Итерация комнаты
         static int _roomNum;                                    // Номер комнаты
 
-        //static bool completed = false;
+        static bool completed = false;
 
         static Point player;                                    // Точка игрока
 
-        static Point[] goals;                                   // Массив точек завершения итерации
+        static Point monster_1;
 
-        static List<Point> pointList = new List<Point> { };     // Список всех точек
+        static Point monster_2;
+
+        static List<Point> goals;                                   // Список всех точек
 
         #endregion
 
-        static public void Init(int questNum, int roomIter, int roomNum = 0)    // Инициализация уровня а.к.а. входная точка
+        static public void Init(int questNum, int roomIter, int roomNum = 0, bool isFirst = true)    // Инициализация уровня а.к.а. входная точка
         {
+            completed = false;
             _roomNum = roomNum;     // Передача
             _questNum = questNum;   // Значений
             _roomIter = roomIter;   // Переменных
@@ -32,14 +35,38 @@ namespace RPGTestC.Locations
             {
                 case 0:
 
-                    player = new Point { Index = "@" };
-
-                    goals = new Point[]
+                    if (roomNum == 0)
                     {
-                        new Point { X = 6, Y = 6, Type = Point.PointType.Goal },
-                        new Point { X = 4, Y = 6, Index = "%", Type = Point.PointType.Monster },
-                        new Point { X = 6, Y = 4, Index = "%", Type = Point.PointType.Monster },
-                    };
+                        if (isFirst)
+                        {
+                            monster_1 = new Point { X = 4, Y = 6, Type = Point.PointType.Monster };
+                            monster_2 = new Point { X = 6, Y = 4, Type = Point.PointType.Monster };
+                        }
+
+                        player = new Point { Type = Point.PointType.Player };
+
+                        goals = new List<Point>
+                        {
+                            player,
+                            new Point { X = 6, Y = 6, Type = Point.PointType.Goal },
+                            new Point { X = 2, Y = 2, Type = Point.PointType.TransitionPos },
+                            monster_1,
+                            monster_2
+                        };
+                    }
+
+                    else
+                    {
+                        player = new Point { Type = Point.PointType.Player };
+
+                        goals = new List<Point>
+                        {
+                            player,
+                            new Point { X = 6, Y = 6, Type = Point.PointType.Goal },
+                            new Point { X = 2, Y = 2, Type = Point.PointType.TransitionNeg },
+                        };
+                    }
+                    
 
                     break;
 
@@ -47,16 +74,16 @@ namespace RPGTestC.Locations
 
                     if (roomIter == 0)
                     {
-                        player = new Point { X = 0, Y = 4 };
+                        player = new Point { X = 0, Y = 4, Type = Point.PointType.Player };
 
-                        goals = new Point[] { new Point { X = 20, Y = 3, Type = Point.PointType.Goal } };
+                        goals = new List<Point> { new Point { X = 20, Y = 3, Type = Point.PointType.Goal } };
                     }
 
                     else
                     {
-                        player = new Point { X = 20, Y = 3, Index = "@" };
+                        player = new Point { X = 20, Y = 3, Type = Point.PointType.Player };
 
-                        goals = new Point[] { new Point { X = 0, Y = 3, Index = "%", Type = Point.PointType.Goal } };
+                        goals = new List<Point> { new Point { X = 0, Y = 3, Type = Point.PointType.Goal } };
                     }
                     break;
 
@@ -64,23 +91,23 @@ namespace RPGTestC.Locations
 
                     if (roomIter == 0)
                     {
-                        player = new Point { X = 6, Y = 6, Index = "@" };
+                        player = new Point { X = 6, Y = 6, Type = Point.PointType.Player };
 
-                        goals = new Point[] { new Point { X = 6, Y = 0, Index = "%", Type = Point.PointType.Goal } };
+                        goals = new List<Point> { new Point { X = 6, Y = 0, Type = Point.PointType.Goal } };
                     }
 
                     else if (roomIter == 1)
                     {
-                        player = new Point { X = 6, Y = 0, Index = "@" };
+                        player = new Point { X = 6, Y = 0, Type = Point.PointType.Player };
 
-                        goals = new Point[] { new Point { X = 6, Y = 6, Type = Point.PointType.Goal } };
+                        goals = new List<Point> { new Point { X = 6, Y = 6, Type = Point.PointType.Goal } };
                     }
 
                     else
                     {
-                        player = new Point { X = 6, Y = 6, Index = "@" };
+                        player = new Point { X = 6, Y = 6, Type = Point.PointType.Player };
 
-                        goals = new Point[] { new Point { X = 0, Y = 1, Type = Point.PointType.Goal } };
+                        goals = new List<Point> { new Point { X = 0, Y = 1, Type = Point.PointType.Goal } };
                     }
                     break;
 
@@ -89,23 +116,23 @@ namespace RPGTestC.Locations
                     if (roomNum == 0)
                     {
                         if (roomIter == 0)
-                            player = new Point { X = 18, Y = 2, Index = "@" };
+                            player = new Point { X = 18, Y = 2, Type = Point.PointType.Player};
 
                         else
-                            player = new Point { X = 2, Y = 2, Index = "@" };
+                            player = new Point { X = 2, Y = 2, Type = Point.PointType.Player };
 
-                        goals = new Point[] { new Point { X = 0, Y = 2, Type = Point.PointType.TransitionPos } };
+                        goals = new List<Point> { new Point { X = 0, Y = 2, Type = Point.PointType.TransitionPos } };
                     }
 
                     else if (roomNum == 1)
                     {
                         if (roomIter == 0)
-                            player = new Point { X = 8, Y = 3, Index = "@" };
+                            player = new Point { X = 8, Y = 3, Type = Point.PointType.Player };
 
                         else
-                            player = new Point { X = 2, Y = 3, Index = "@" };
+                            player = new Point { X = 2, Y = 3, Type = Point.PointType.Player };
 
-                        goals = new Point[] 
+                        goals = new List<Point>
                         {
                             new Point { X = 0, Y = 3, Type = Point.PointType.TransitionPos },
                             new Point { X = 10, Y = 3, Type = Point.PointType.TransitionNeg }
@@ -114,9 +141,9 @@ namespace RPGTestC.Locations
 
                     else
                     {
-                        player = new Point { X = 32, Y = 2, Index = "@" };
+                        player = new Point { X = 32, Y = 2, Type = Point.PointType.Player };
 
-                        goals = new Point[]
+                        goals = new List<Point>
                         {
                             new Point{X = 3, Y = 2, Type = Point.PointType.Goal},
                             new Point{X = 34, Y = 2, Type = Point.PointType.TransitionNeg}
@@ -129,14 +156,6 @@ namespace RPGTestC.Locations
                     break;
             }
 
-            pointList.Clear();
-
-            pointList.Add(player);
-            foreach(Point goal in goals)
-            {
-                pointList.Add(goal);
-            }
-
             Dungeon();
         }
 
@@ -144,39 +163,60 @@ namespace RPGTestC.Locations
         {
             Console.Clear();
 
-            for (int Y = 0; Y < Maps().Length; Y++)             // Пересчитывание каждой координаты Y
+            if (!completed)
             {
-                Console.WriteLine(Line(Y));
-            }
+                Console.WriteLine(_roomNum + " " + player.X + " " + player.Y);
 
-            foreach(Point goal in goals)
-            {
-                if (player.IsEqualTo(goal) && goal.IsShown)
+                for (int Y = 0; Y < Maps().Length; Y++)             // Пересчитывание каждой координаты Y
                 {
-                    FinishMapIteration(goal);
-                    break;
+                    Console.WriteLine(Line(Y));
                 }
-                else if (goal == goals[goals.Length - 1]) DungeonControls();
-                else continue;
+
+                foreach (Point goal in goals)
+                {
+                    if (player.IsEqualTo(goal) && goal.IsShown && goal.Type != Point.PointType.Player)
+                    {
+                        FinishMapIteration(goal);
+                        break;
+                    }
+                    else if (goal == goals[goals.Count - 1]) DungeonControls();
+                    else continue;
+                }
             }
         }
 
         static void FinishMapIteration(Point goal)                              // Завершение итерации карты
         {
-            if (goal.Type == Point.PointType.TransitionPos) Init(_questNum, 0, _roomNum + 1);
-
-            else if (goal.Type == Point.PointType.TransitionNeg) Init(_questNum, 1, _roomNum - 1);
-
-            else if (goal.Type == Point.PointType.Monster)
+            switch (goal.Type)
             {
-                goal.IsShown = false;
-                Fight.Init(false);
-                Dungeon();
+                case Point.PointType.Monster:
+                    goal.IsShown = false;
+                    Fight.Init(false);
+                    Dungeon();
+                    break;
+
+                case Point.PointType.TransitionPos:
+                    Init(_questNum, 0, _roomNum + 1, false);
+                    break;
+
+                case Point.PointType.TransitionNeg:
+                    Init(_questNum, 1, _roomNum - 1, false);
+                    break;
+
+                case Point.PointType.Goal:
+                    completed = true;
+                    break;
+
+                default:
+                    break;
             }
         }
 
         static void DungeonControls()                                           // Управление точкой игрока
         {
+            int mapSizeY = Maps().Length - 1;
+            int mapSizeX = Maps()[player.Y].Length - 1;
+
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.W:
@@ -186,9 +226,9 @@ namespace RPGTestC.Locations
                     break;
 
                 case ConsoleKey.S:
-                    if (player.Y < Maps().Length - 1)
+                    if (player.Y < mapSizeY)
                         player.MoveDown();
-                    else player.Y = Maps().Length - 1;
+                    else player.Y = mapSizeY;
                     break;
 
                 case ConsoleKey.A:
@@ -198,9 +238,38 @@ namespace RPGTestC.Locations
                     break;
 
                 case ConsoleKey.D:
-                    if (player.X < Maps()[player.Y].Length - 1)
+                    if (player.X < mapSizeX)
                         player.MoveRight();
-                    else player.X = Maps()[player.Y].Length - 1;
+                    else player.X = mapSizeX;
+                    break;
+
+                case ConsoleKey.C:
+                    string line = Console.ReadLine();
+                    char[] a = new char[1] { ' ' };
+
+                    string[] lineArr = line.Split(a, 4);
+
+                    if (lineArr[1] == "tp")
+                    {
+                        player.X = Convert.ToInt16(lineArr[2]);
+                        player.Y = Convert.ToInt16(lineArr[3]);
+
+                        if (player.Y > mapSizeY) player.Y = mapSizeY;
+
+                        else player.Y = 0;
+
+                        if (player.X > mapSizeX) player.X = mapSizeX;
+
+                        else player.X = 0;
+                    }
+
+                    else if (lineArr[1] == "end")
+                    {
+                        completed = true;
+                    }
+
+                    else goto default;
+
                     break;
 
                 default:
@@ -215,12 +284,12 @@ namespace RPGTestC.Locations
         {
             string bufLine = Maps()[Y];
 
-            foreach(Point pnt in pointList)
+            foreach(Point pnt in goals)
             {
                 if(Y == pnt.Y && pnt.IsShown)
                 {
                     bufLine = bufLine.Remove(pnt.X, 1);
-                    bufLine = bufLine.Insert(pnt.X, pnt.Index);
+                    bufLine = bufLine.Insert(pnt.X, pnt.Index());
                 }
             }
 

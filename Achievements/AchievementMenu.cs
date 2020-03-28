@@ -9,21 +9,24 @@ namespace RPGTestC.Achievements
         {
             Console.Clear();
 
-            Console.WriteLine(Achievement.achList.Count + " достижений всего.");
+            int count = 0;
 
-            foreach (Achievement Achievement in Achievement.achList)
+            foreach (Achievement ach in Achievement.achList)
             {
-                if (Achievement.Condition)
+                if (ach.Condition)
                 {
-                    RPG.Dialogue("\n" + Achievement.Title, true, Achievement.Color);
-                    Console.WriteLine(Achievement.Description);
+                    count++;
+                    RPG.Dialogue("\n" + ach.Title, true, ach.Color);
+                    Console.WriteLine(ach.Description);
                 }
 
                 else
                 {
-                    RPG.Dialogue("\n" + Achievement.Title, true, ConsoleColor.Red);
+                    RPG.Dialogue("\n" + ach.Title, true, ConsoleColor.Red);
                 }
             }
+
+            Console.WriteLine("\n" + count + "/" + Achievement.achList.Count + " достижений получено.");
 
             Console.ReadKey();
         }

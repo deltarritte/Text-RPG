@@ -6,9 +6,7 @@
 
         public int Y { get; set; } = 0;
 
-        public string Index { get; set; } = "!";
-
-        public PointType Type { get; set; } = PointType.Player;
+        public PointType Type { get; set; }
 
         public bool IsShown { get; set; } = true;
 
@@ -20,6 +18,31 @@
             TransitionNeg,  // Отрицательный переход
             Goal            // Цель
         }
+
+        public string Index()
+        {
+            switch (Type)
+            {
+                case PointType.Player:
+                    return "@";
+
+                case PointType.Monster:
+                    return "%";
+
+                case PointType.TransitionPos:
+                    return ">";
+
+                case PointType.TransitionNeg:
+                    return "<";
+
+                case PointType.Goal:
+                    return "!";
+
+                default:
+                    return "?";
+            }
+        }
+
         public bool IsEqualTo(Point point) => X == point.X && Y == point.Y;
 
         public void MoveUp() => Y--;
