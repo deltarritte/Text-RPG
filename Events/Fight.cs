@@ -31,14 +31,14 @@ namespace RPGTestC.Events
 
         public static MonsterType mnstrType;    // Переменная типа монстра
 
-        static private bool _boss;              // Местная переменная
+        static bool _boss;              // Местная переменная
 
         static int Crit;                        // Шанс критического урона
         const float critCoeff = 1.75f;          // Коэффициент критического урона
         static bool shieldOn;                   // Вооружён ли щит
         static public float playerAttack;       // Значение атаки игрока
         static public double playerDefence;     // Значение защиты игрока
-        static float playerShield;             // Доп. защита от щита
+        static float playerShield;              // Доп. защита от щита
         public static Status playerStatus;      // Переменная статуса игрока
         static float strikeChance = 0.95f;      // Шанс успешного попадания
         static public int healCount = 3;        // Кол-во зарядов
@@ -100,7 +100,7 @@ namespace RPGTestC.Events
 
             if (MnstrHP > 0)                                            // Продолжение битвы
             {
-                Console.WriteLine($"Что будешь делать? \nАтака - 1 ({strikeChance}% успех)," +
+                Console.WriteLine($"Что будешь делать? \nАтака - 1 ({strikeChance*100}% успех)," +
                     "\nЛечение - 2 (Зарядов: " + healCount + ")" +
                     "\nПоставить щит - 3 (" + playerShield / 2 + " ед. защиты)" +
                     "\nПодсказка по типу - 4");                         // Вывести список возможных действий
@@ -124,35 +124,21 @@ namespace RPGTestC.Events
 
                         if (RPG.playerHP < RPG.playerMaxHP)
                         {
-                            switch (healCount)
+                            if(healCount > 0)
                             {
-                                case 1:
-                                case 2:
-                                case 3:
+                                if (shieldOn)
+                                {
+                                    RPG.playerHP = RPG.playerMaxHP + playerShield;
+                                }
 
-                                    if (shieldOn)
-                                    {
-                                        RPG.playerHP = RPG.playerMaxHP + playerShield;
-                                    }
+                                else
+                                {
+                                    RPG.playerHP = RPG.playerMaxHP;
+                                }
 
-                                    else
-                                    {
-                                        RPG.playerHP = RPG.playerMaxHP;
-                                    }
-                                    
-                                    healCount--;
-                                    break;
-
-                                case 0:
-                                    Console.WriteLine("Нет зарядов.");
-                                    break;
-
-                                default:
-                                    Console.Clear();
-                                    Console.WriteLine("???");
-                                    RPG.Main();
-                                    break;
+                                healCount--;
                             }
+                            else Console.WriteLine("Нет зарядов.");
                         }
 
                         else
@@ -229,7 +215,7 @@ namespace RPGTestC.Events
                     RPG.Dialogue("Полученный опыт был превращён в " + (int)Math.Round((RPG.playerXP - RPG.lvlUpXP) / 10) + " очков мастерства", false, ConsoleColor.Yellow);
                 }
 
-                PlayerlvlUp(false);
+                PlayerlvlUp();
             }
         }
 
@@ -340,16 +326,13 @@ namespace RPGTestC.Events
                     }
                 }
                 
-                else
-                {
-                    count++;
-                }
+                else count++;
             }
 
             MonsterFight();
         }
         
-        static public void PlayerlvlUp(bool cheat)
+        static public void PlayerlvlUp(bool cheat = false)
         {
             while ((RPG.playerXP >= RPG.lvlUpXP || cheat) && RPG.lvl <= 14)
             {
@@ -359,21 +342,6 @@ namespace RPGTestC.Events
                 RPG.playerMaxHP = 50 + (float)Math.Pow(2, RPG.lvl);
 
                 cheat = false;
-
-                Achievement.prog1.Condition = RPG.lvl >= 2;
-                Achievement.prog2.Condition = RPG.lvl >= 3;
-                Achievement.prog3.Condition = RPG.lvl >= 4;
-                Achievement.prog4.Condition = RPG.lvl >= 5;
-                Achievement.prog5.Condition = RPG.lvl >= 6;
-                Achievement.prog6.Condition = RPG.lvl >= 7;
-                Achievement.prog7.Condition = RPG.lvl >= 8;
-                Achievement.prog8.Condition = RPG.lvl >= 9;
-                Achievement.prog9.Condition = RPG.lvl >= 10;
-                Achievement.prog10.Condition = RPG.lvl >= 11;
-                Achievement.prog11.Condition = RPG.lvl >= 12;
-                Achievement.prog12.Condition = RPG.lvl >= 13;
-                Achievement.prog13.Condition = RPG.lvl >= 14;
-                Achievement.prog14.Condition = RPG.lvl >= 15;
             }
 
             if (RPG.lvl == 15)

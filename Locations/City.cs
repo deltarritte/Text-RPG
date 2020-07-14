@@ -149,7 +149,6 @@ namespace RPGTestC.Locations
             {
                 RPG.Dialogue("В таверне творится невероятная анархия. Бутылки летают из стороны в сторону, половина столов перевёрнута.", false, ConsoleColor.Yellow);
                 RPG.Dialogue("В общем, всё как и полагается.", false, ConsoleColor.Yellow);
-                Achievement.anarchy.Condition = true;
                 RPG.gotAnarchy = true;
             }
 
@@ -263,7 +262,6 @@ namespace RPGTestC.Locations
 
                             RPG.questNum = 2;
                             currentPlotState = QuestState.Unknown;
-                            Achievement.quest1.Condition = true;
 
                             GearUpgrade(true);
 
@@ -367,7 +365,6 @@ namespace RPGTestC.Locations
 
                             RPG.questNum = 3;
                             currentPlotState = QuestState.Unknown;
-                            Achievement.quest2.Condition = true;
 
                             GearUpgrade(true);
 
@@ -388,7 +385,6 @@ namespace RPGTestC.Locations
                     {
                         RPG.Dialogue("Ah shit, here we go again.", false, ConsoleColor.Yellow);
                         RPG.ahShit = true;
-                        Achievement.memeref.Condition = true;
                     }
 
                     RPG.Dialogue("\nОхра садится за ваш стол.");
@@ -475,15 +471,12 @@ namespace RPGTestC.Locations
 
                             if (RPG.brokeIn)
                             {
-                                Achievement.brokenDoor.Condition = true;
 
                                 RPG.Dialogue("\nОхра", "Что ты наделал?", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Я тебя попросил разобраться только с монстром!", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Что тебе дверь-то сделала?", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Ладно, чёрт с этой дверью.", false, ConsoleColor.DarkYellow);
                             }
-
-                            else Achievement.nonBrute.Condition = true;
 
                             RPG.Dialogue("\nОхра", "Спасибо.", false, ConsoleColor.DarkYellow);
                             RPG.Dialogue("Охра", "Теперь моя работа может продолжаться спокойно.", false, ConsoleColor.DarkYellow);
@@ -493,7 +486,6 @@ namespace RPGTestC.Locations
 
                             RPG.questNum = 4;
                             currentPlotState = QuestState.Unknown;
-                            Achievement.quest3.Condition = true;
 
                             GearUpgrade(true);
 
@@ -532,7 +524,6 @@ namespace RPGTestC.Locations
                     if (!RPG.towerLoc && RPG.lvl == 15)
                     {
                         RPG.towerLoc = true;
-                        Achievement.tower.Condition = true;
 
                         RPG.Dialogue("Внезапно из-за спины выходит...");
                         RPG.Dialogue("\nКто это?");

@@ -1,221 +1,203 @@
 ﻿using RPGTestC.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace RPGTestC.Locations
 {
     public class Dungeons
     {
-        #region Variables
+        static int i;
+        static bool isActive;
+        static Room[] roomSet;
+        static Point player;
 
-        static int _questNum;                                   // Номер квеста
-        static int _roomIter;                                   // Итерация комнаты
-        static int _roomNum;                                    // Номер комнаты
-
-        static bool completed = false;
-
-        static Point player;                                    // Точка игрока
-
-        static Point monster_1;
-
-        static Point monster_2;
-
-        static List<Point> goals;                                   // Список всех точек
-
-        #endregion
-
-        static public void Init(int questNum, int roomIter, int roomNum = 0, bool isFirst = true)    // Инициализация уровня а.к.а. входная точка
+        static public void Init(int questNum, int iteration = 0)
         {
-            completed = false;
-            _roomNum = roomNum;     // Передача
-            _questNum = questNum;   // Значений
-            _roomIter = roomIter;   // Переменных
+            i = iteration;
+            isActive = true;
 
             switch (questNum)
             {
                 case 0:
-
-                    if (roomNum == 0)
+                    Room.test_room_0 = new Room
                     {
-                        if (isFirst)
+                        Player = new Point(22, 8) { Type = Point.PointType.Player },
+                        PointList = new Point[3]
                         {
-                            monster_1 = new Point { X = 4, Y = 6, Type = Point.PointType.Monster };
-                            monster_2 = new Point { X = 6, Y = 4, Type = Point.PointType.Monster };
+                            new Point(23, 9) { Type = Point.PointType.Goal},
+                            new Point(10, 8) { Type = Point.PointType.Monster},
+                            new Point(12, 8) { Type = Point.PointType.Transition, TransitRoomIndex = 1 }
+                        },
+                        Map = new string[]
+                        {
+                            "_________________________",
+                            "_________________________",
+                            "_________________________",
+                            "_________________________",
+                            "_________________________",
+                            "_________________________",
+                            "_________________________",
+                            "_________________________",
+                            "_________________________",
+                            "_________________________"
                         }
-
-                        player = new Point { Type = Point.PointType.Player };
-
-                        goals = new List<Point>
-                        {
-                            player,
-                            new Point { X = 6, Y = 6, Type = Point.PointType.Goal },
-                            new Point { X = 2, Y = 2, Type = Point.PointType.TransitionPos },
-                            monster_1,
-                            monster_2
-                        };
-                    }
-
-                    else
+                    };
+                    Room.test_room_1 = new Room
                     {
-                        player = new Point { Type = Point.PointType.Player };
-
-                        goals = new List<Point>
+                        Player = new Point(22, 8) { },
+                        PointList = new Point[3]
                         {
-                            player,
-                            new Point { X = 6, Y = 6, Type = Point.PointType.Goal },
-                            new Point { X = 2, Y = 2, Type = Point.PointType.TransitionNeg },
-                        };
-                    }
-                    
+                            new Point(23, 9) { Type = Point.PointType.Goal},
+                            new Point(10, 8) { Type = Point.PointType.Monster},
+                            new Point(12, 8) { Type = Point.PointType.Transition, TransitRoomIndex = 0}
+                        },
+                        Map = Room.test_room_0.Map
+                    };
 
+                    roomSet = new Room[2]
+                    {
+                        Room.test_room_0,
+                        Room.test_room_1
+                    };
                     break;
 
                 case 2:
-
-                    if (roomIter == 0)
+                    Room.quest_2_0_0 = new Room
                     {
-                        player = new Point { X = 0, Y = 4, Type = Point.PointType.Player };
-
-                        goals = new List<Point> { new Point { X = 20, Y = 3, Type = Point.PointType.Goal } };
-                    }
-
-                    else
+                        Player = new Point(0, 4) { Type = Point.PointType.Player },
+                        PointList = new Point[1]
+                        {
+                            new Point(20, 3) { Type = Point.PointType.Goal }
+                        },
+                        Map = new string[]
+                        {
+                            "fffffffffFFFFffFFffFfFffFfff",
+                            "____________________________",
+                            "______________=====OP_______",
+                            "_______=======______________",
+                            "=======_____________________",
+                            "____________________________",
+                            "ffFFFfFFFFFFFFFfFFFFFffFffff",
+                        }
+                    };
+                    Room.quest_2_0_1 = new Room
                     {
-                        player = new Point { X = 20, Y = 3, Type = Point.PointType.Player };
+                        Player = new Point(20, 3) { Type = Point.PointType.Player },
+                        PointList = new Point[1]
+                        {
+                            new Point(0, 3) { Type = Point.PointType.Goal }
+                        },
+                        Map = Room.quest_2_0_0.Map
+                    };
 
-                        goals = new List<Point> { new Point { X = 0, Y = 3, Type = Point.PointType.Goal } };
-                    }
+                    roomSet = new Room[2]
+                    {
+                        new Room(Room.quest_2_0_0),
+                        new Room(Room.quest_2_0_1)
+                    };
                     break;
 
                 case 3:
-
-                    if (roomIter == 0)
+                    roomSet = new Room[3]
                     {
-                        player = new Point { X = 6, Y = 6, Type = Point.PointType.Player };
-
-                        goals = new List<Point> { new Point { X = 6, Y = 0, Type = Point.PointType.Goal } };
-                    }
-
-                    else if (roomIter == 1)
-                    {
-                        player = new Point { X = 6, Y = 0, Type = Point.PointType.Player };
-
-                        goals = new List<Point> { new Point { X = 6, Y = 6, Type = Point.PointType.Goal } };
-                    }
-
-                    else
-                    {
-                        player = new Point { X = 6, Y = 6, Type = Point.PointType.Player };
-
-                        goals = new List<Point> { new Point { X = 0, Y = 1, Type = Point.PointType.Goal } };
-                    }
+                        new Room(Room.quest_3_0_0),
+                        new Room(Room.quest_3_0_1),
+                        new Room(Room.quest_3_0_2)
+                    };
                     break;
 
                 case 4:
-
-                    if (roomNum == 0)
+                    roomSet = new Room[5]
                     {
-                        if (roomIter == 0)
-                            player = new Point { X = 18, Y = 2, Type = Point.PointType.Player};
-
-                        else
-                            player = new Point { X = 2, Y = 2, Type = Point.PointType.Player };
-
-                        goals = new List<Point> { new Point { X = 0, Y = 2, Type = Point.PointType.TransitionPos } };
-                    }
-
-                    else if (roomNum == 1)
-                    {
-                        if (roomIter == 0)
-                            player = new Point { X = 8, Y = 3, Type = Point.PointType.Player };
-
-                        else
-                            player = new Point { X = 2, Y = 3, Type = Point.PointType.Player };
-
-                        goals = new List<Point>
-                        {
-                            new Point { X = 0, Y = 3, Type = Point.PointType.TransitionPos },
-                            new Point { X = 10, Y = 3, Type = Point.PointType.TransitionNeg }
-                        };
-                    }
-
-                    else
-                    {
-                        player = new Point { X = 32, Y = 2, Type = Point.PointType.Player };
-
-                        goals = new List<Point>
-                        {
-                            new Point{X = 3, Y = 2, Type = Point.PointType.Goal},
-                            new Point{X = 34, Y = 2, Type = Point.PointType.TransitionNeg}
-                        };
-                    }
-                    break;
-
-                default:
-                    Console.WriteLine("oops");
+                        new Room(Room.quest_4_0_0),
+                        new Room(Room.quest_4_0_1),
+                        new Room(Room.quest_4_1_0),
+                        new Room(Room.quest_4_1_1),
+                        new Room(Room.quest_4_2_0),
+                    };
                     break;
             }
+
+            player = new Point(roomSet[i].Player);
 
             Dungeon();
         }
 
-        static void Dungeon()                                                   // Логика уровня квеста
+        static void Dungeon()
         {
             Console.Clear();
+            Console.WriteLine($"player: {player.X}, {player.Y}; Player: {roomSet[i].Player.X}, {roomSet[i].Player.Y}.");
+            //Draw the map line by line from top to bottom
+            for(int Y = 0; Y < roomSet[i].Map.Length; Y++) Console.WriteLine(Line(Y));
 
-            if (!completed)
+            DungeonControls();
+
+            //Check if player has stepped on a point
+            foreach (Point pnt in roomSet[i].PointList)
             {
-                Console.WriteLine(_roomNum + " " + player.X + " " + player.Y);
-
-                for (int Y = 0; Y < Maps().Length; Y++)             // Пересчитывание каждой координаты Y
+                if(player.IsEqualTo(pnt) && pnt.IsShown)
                 {
-                    Console.WriteLine(Line(Y));
-                }
-
-                foreach (Point goal in goals)
-                {
-                    if (player.IsEqualTo(goal) && goal.IsShown && goal.Type != Point.PointType.Player)
-                    {
-                        FinishMapIteration(goal);
-                        break;
-                    }
-                    else if (goal == goals[goals.Count - 1]) DungeonControls();
-                    else continue;
+                    GetEvent(pnt);
+                    break;
                 }
             }
+
+            if (isActive) Dungeon();
         }
 
-        static void FinishMapIteration(Point goal)                              // Завершение итерации карты
+        static string Line(int Y)
         {
-            switch (goal.Type)
+            string bufLine = roomSet[i].Map[Y];
+
+            foreach(Point pnt in roomSet[i].PointList)
+            {
+                if (Y == pnt.Y && pnt.IsShown)
+                {
+                    bufLine = bufLine.Remove(pnt.X, 1);
+                    bufLine = bufLine.Insert(pnt.X, pnt.Index());
+                }
+            }
+
+            if (Y == player.Y)
+            {
+                bufLine = bufLine.Remove(player.X, 1);
+                bufLine = bufLine.Insert(player.X, player.Index());
+            }
+
+            return bufLine;
+        }
+
+        static void GetEvent(Point pnt)
+        {
+            switch (pnt.Type)
             {
                 case Point.PointType.Monster:
-                    goal.IsShown = false;
+                    pnt.IsShown = false;
                     Fight.Init(false);
-                    Dungeon();
-                    break;
+                    goto default;
 
-                case Point.PointType.TransitionPos:
-                    Init(_questNum, 0, _roomNum + 1, false);
-                    break;
-
-                case Point.PointType.TransitionNeg:
-                    Init(_questNum, 1, _roomNum - 1, false);
-                    break;
+                case Point.PointType.Transition:
+                    i = pnt.TransitRoomIndex;
+                    player = new Point(roomSet[i].Player);
+                    goto default;
 
                 case Point.PointType.Goal:
-                    completed = true;
+                    isActive = false;
                     break;
 
                 default:
+                    Dungeon();
                     break;
             }
         }
 
-        static void DungeonControls()                                           // Управление точкой игрока
+        static void DungeonControls()
         {
-            int mapSizeY = Maps().Length - 1;
-            int mapSizeX = Maps()[player.Y].Length - 1;
+            int mapHeight = roomSet[i].Map.Length - 1;
+            int mapWidth = roomSet[i].Map[player.Y].Length - 1;
 
             switch (Console.ReadKey().Key)
             {
@@ -226,9 +208,9 @@ namespace RPGTestC.Locations
                     break;
 
                 case ConsoleKey.S:
-                    if (player.Y < mapSizeY)
+                    if (player.Y < mapHeight)
                         player.MoveDown();
-                    else player.Y = mapSizeY;
+                    else player.Y = mapHeight;
                     break;
 
                 case ConsoleKey.A:
@@ -238,165 +220,14 @@ namespace RPGTestC.Locations
                     break;
 
                 case ConsoleKey.D:
-                    if (player.X < mapSizeX)
+                    if (player.X < mapWidth)
                         player.MoveRight();
-                    else player.X = mapSizeX;
-                    break;
-
-                case ConsoleKey.C:
-                    string line = Console.ReadLine();
-                    char[] a = new char[1] { ' ' };
-
-                    string[] lineArr = line.Split(a, 4);
-
-                    if (lineArr[1] == "tp")
-                    {
-                        player.X = Convert.ToInt16(lineArr[2]);
-                        player.Y = Convert.ToInt16(lineArr[3]);
-
-                        if (player.Y > mapSizeY) player.Y = mapSizeY;
-
-                        else player.Y = 0;
-
-                        if (player.X > mapSizeX) player.X = mapSizeX;
-
-                        else player.X = 0;
-                    }
-
-                    else if (lineArr[1] == "end")
-                    {
-                        completed = true;
-                    }
-
-                    else goto default;
-
+                    else player.X = mapWidth;
                     break;
 
                 default:
                     DungeonControls();
                     break;
-            }
-
-            Dungeon();
-        }
-
-        static string Line(int Y)                                               // Генерация полосы уровня
-        {
-            string bufLine = Maps()[Y];
-
-            foreach(Point pnt in goals)
-            {
-                if(Y == pnt.Y && pnt.IsShown)
-                {
-                    bufLine = bufLine.Remove(pnt.X, 1);
-                    bufLine = bufLine.Insert(pnt.X, pnt.Index());
-                }
-            }
-
-            return bufLine;
-        }
-        
-        static string[] Maps()                                                  // Карты
-        {
-            string[] lines = new string[0];
-
-            switch (_questNum)
-            {
-                case 0:
-                    lines = new string[]
-                    {
-                        "_______",
-                        "_______",
-                        "_______",
-                        "_______",
-                        "_______",
-                        "_______",
-                        "_______",
-                    };
-
-                    return lines;
-
-                case 2:
-                    
-                    lines = new string[]
-                    {
-                        "fffffffffFFFFffFFffFfFffFfff",
-                        "____________________________",
-                        "______________=====OP_______",
-                        "_______=======______________",
-                        "=======_____________________",
-                        "____________________________",
-                        "ffFFFfFFFFFFFFFfFFFFFffFffff",
-                    };
-
-                    return lines;
-
-                case 3:
-
-                    lines = new string[]
-                    {
-                        "____*****____",
-                        "_____***_____",
-                        "#___________#",
-                        "#___________#",
-                        "#___________#",
-                        "_____________",
-                        "_____|H|_____",
-                    };
-
-                    return lines;
-
-                case 4:
-
-                    switch (_roomNum)
-                    {
-                        case 0:
-
-                            lines = new string[]
-                            {
-                                "__________________:",
-                                "__________________:",
-                                "==================I",
-                                "__________________:",
-                                "__________________:",
-                            };
-
-                            break;
-
-                        case 1:
-
-                            lines = new string[]
-                            {
-                                "___________",
-                                "___________",
-                                "___________",
-                                "=====T=====",
-                                "_____H_____",
-                                "_____O_____",
-                                "___________"
-                            };
-
-                            break;
-
-                        case 2:
-
-                            lines = new string[]
-                            {
-                                "___________________________________",
-                                "___________________________________",
-                                "___________________O===============",
-                                "___________________________________",
-                                "___________________________________"
-                            };
-
-                            break;
-                    }
-                    
-
-                    return lines;
-
-                default:
-                    return new string[] { "oops" };
             }
         }
     }

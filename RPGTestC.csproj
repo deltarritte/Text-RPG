@@ -48,8 +48,9 @@
     <Compile Include="Achievements\Achievement.cs" />
     <Compile Include="Events\Fight.cs" />
     <Compile Include="Locations\City.cs" />
-    <Compile Include="Locations\Dungeons.cs" />
     <Compile Include="Locations\Point.cs" />
+    <Compile Include="Locations\Room.cs" />
+    <Compile Include="Locations\Dungeons.cs" />
     <Compile Include="Quests\PlotQuests.cs" />
     <Compile Include="RPG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -58,5 +59,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

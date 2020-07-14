@@ -13,9 +13,8 @@
         public enum PointType
         {
             Player,         // Игрок
-            Monster,        // Монст
-            TransitionPos,  // Положительный переход
-            TransitionNeg,  // Отрицательный переход
+            Monster,        // Монстр
+            Transition,     // Переход
             Goal            // Цель
         }
 
@@ -29,11 +28,8 @@
                 case PointType.Monster:
                     return "%";
 
-                case PointType.TransitionPos:
+                case PointType.Transition:
                     return ">";
-
-                case PointType.TransitionNeg:
-                    return "<";
 
                 case PointType.Goal:
                     return "!";
@@ -41,6 +37,20 @@
                 default:
                     return "?";
             }
+        }
+
+        public int TransitRoomIndex;
+
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public Point(Point point)
+        {
+            X = point.X;
+            Y = point.Y;
         }
 
         public bool IsEqualTo(Point point) => X == point.X && Y == point.Y;

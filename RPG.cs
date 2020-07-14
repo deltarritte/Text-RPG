@@ -49,32 +49,9 @@ namespace RPGTestCBuildA
         static public string HPLine;
         static string Spaces;
         static int Perc;
-
-        static public List<object> saveList = new List<object>
-            {
-                City.cityBank,
-                lvl,
-                playerXP,
-                lvlUpXP,
-                playerHP,
-                playerMaxHP,
-                playerMoney,
-                City.currentPlotState,
-                questNum,
-                City.wasInCity,
-                weaponDamageCoeff,
-                armorDefenceCoeff,
-                masteryPoints,
-                towerLoc,
-                Tower.mageName,
-                Tower.wasIntroduced,
-                gotAnarchy,
-                ahShit,
-                brokeIn
-            };
         #endregion
 
-        public static void Fancies()
+        static public void Fancies()
         {
             char a = '='; // Символ наполнения
             char b = ' '; // Пропуск
@@ -117,6 +94,29 @@ namespace RPGTestCBuildA
 
         static void SaveProgress(bool currentSave)
         {
+            List<object> saveList = new List<object>
+                {
+                City.cityBank,
+                lvl,
+                playerXP,
+                lvlUpXP,
+                playerHP,
+                playerMaxHP,
+                playerMoney,
+                City.currentPlotState,
+                questNum,
+                City.wasInCity,
+                weaponDamageCoeff,
+                armorDefenceCoeff,
+                masteryPoints,
+                towerLoc,
+                Tower.mageName,
+                Tower.wasIntroduced,
+                gotAnarchy,
+                ahShit,
+                brokeIn
+            };
+
             if (!currentSave)
             {
                 if (File.Exists(savename))
@@ -158,10 +158,7 @@ namespace RPGTestCBuildA
                 {
                     string str = "";
 
-                    foreach (object obj in saveList)
-                    {
-                        str += obj + "\n";
-                    }
+                    foreach (object obj in saveList) str += obj + "\n";
 
                     using (StreamWriter sw = new StreamWriter(savename, false, Encoding.Default)) sw.Write(str);
 
@@ -198,8 +195,9 @@ namespace RPGTestCBuildA
             {
                 try
                 {
-                    string line = sr.ReadLine();
-                    
+                    string line;
+
+                    line = sr.ReadLine();
                     City.cityBank = Convert.ToSingle(line);
 
                     line = sr.ReadLine();
@@ -255,6 +253,7 @@ namespace RPGTestCBuildA
 
                     line = sr.ReadLine();
                     brokeIn = Convert.ToBoolean(line);
+
                 }
                 catch
                 {
@@ -268,6 +267,7 @@ namespace RPGTestCBuildA
 
         static public void Main()
         {
+
             Console.WriteLine("Выберите название для файла сохранения (Образец: C:saveFile)");
             savename = Console.ReadLine();
             SaveProgress(false);
@@ -305,7 +305,6 @@ namespace RPGTestCBuildA
                     {
                         Console.WriteLine("Тут ничего");
                     }
-
                     else if (Event == 5)
                     {
                         Money = rnd.Next(0, 10) + 2 * lvl;
@@ -313,7 +312,6 @@ namespace RPGTestCBuildA
                         Dialogue("Ого, сундук" +
                             "\nВы получили " + Money + " монет", true, ConsoleColor.Yellow);
                     }
-
                     else
                     {
                         Fight.Init(false);
@@ -362,23 +360,8 @@ namespace RPGTestCBuildA
                     break;
 
                 case "4":
-                    Dungeons.Init(0, 0);
+                    Dungeons.Init(0);
                     Console.Clear();
-                    break;
-
-                case "4 4":
-                    Dungeons.Init(4, 0);
-                    Console.Clear();
-                    break;
-
-                case "5":
-                    int bufQuestNum = questNum;                                 // Буфферные
-                    City.QuestState bufQuestState = City.currentPlotState;      // Переменные
-                    questNum = 3;
-                    PlotQuests.Quest();
-                    Console.Clear();
-                    City.currentPlotState = bufQuestState;
-                    questNum = bufQuestNum;
                     break;
 
                 case "9":
@@ -461,7 +444,7 @@ namespace RPGTestCBuildA
                 case "allthexp": //Дать максимальный уровень. 
                     //Кол-во опыта считается так: a*(1 + 2^0 + 2^1 + 2^2 + 2^3 + 2^4 + 2^5 ... + 2^n-3), где a - начальное кол-во опыта, n - необходимый уровень
                     playerXP = 204800;
-                    Fight.PlayerlvlUp(false);
+                    Fight.PlayerlvlUp();
                     break;
 
                 case "questscomplete": //"Выполнить" квесты

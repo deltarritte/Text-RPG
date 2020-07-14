@@ -44,7 +44,7 @@ namespace RPGTestC.Quests
                     RPG.Dialogue("\n...");
                     RPG.Dialogue("\nЭто будет долгий поход.");
 
-                    Dungeons.Init(RPG.questNum, 0);
+                    Dungeons.Init(RPG.questNum);
 
                     RPG.Dialogue("\nВы подошли к разрушенной повозке.");
                     RPG.Dialogue("\nА рядом с ней...");
@@ -85,7 +85,7 @@ namespace RPGTestC.Quests
                     RPG.Dialogue("В конце подвала видно только чёрный туман.");
                     RPG.Dialogue("\nВы начинаете движение в его сторону.");
 
-                    Dungeons.Init(RPG.questNum, 0);
+                    Dungeons.Init(RPG.questNum);
 
                     RPG.Dialogue("\nКак и ожидалось:");
                     RPG.Dialogue("Внутри тумана монстр.");
