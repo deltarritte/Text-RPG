@@ -176,7 +176,7 @@ namespace RPGTestC.Locations
             {
                 case Point.PointType.Monster:
                     pnt.IsShown = false;
-                    Fight.Init(false);
+                    Fight.Init();
                     goto default;
 
                 case Point.PointType.Transition:

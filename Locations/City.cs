@@ -2,6 +2,7 @@
 using RPGTestC.Events;
 using RPGTestC.Quests;
 using RPGTestCBuildA;
+using static RPGTestC.Player;
 using System;
 
 namespace RPGTestC.Locations
@@ -26,6 +27,7 @@ namespace RPGTestC.Locations
         static float HealTax;
         static float TavernTax;
         static double HealPrice;
+        static double ChargePrice;
         static double BankPrice;
         static double TavernPrice;
         static double ValueW;
@@ -42,12 +44,13 @@ namespace RPGTestC.Locations
             HealTax = 1 + CityEconomy * 4;
             TavernTax = 1 + CityEconomy * 5;
 
-            BankPrice = Math.Round(10 * BankTax, 10);
-            HealPrice = Math.Round(10 * HealTax, 10);
+            BankPrice = Math.Round(10 * BankTax, 0);
+            HealPrice = Math.Round(10 * HealTax, 0);
+            ChargePrice = Math.Round(2 * HealTax, 0);
             TavernPrice = Math.Round(200 * TavernTax);
 
-            ValueW = TavernPrice * RPG.weaponDamageCoeff; // Цена на улучшение оружия
-            ValueA = TavernPrice * RPG.armorDefenceCoeff; //        ...        брони
+            ValueW = TavernPrice * DamageCoeff; // Цена на улучшение оружия
+            ValueA = TavernPrice * DefenceCoeff; //        ...       брони
         }
 
         static public void GoToCity()
@@ -66,8 +69,8 @@ namespace RPGTestC.Locations
             }
 
             Console.WriteLine("\nИгрок:" +
-                "\nHP: " + RPG.playerHP + "/" + RPG.playerMaxHP + " [" + RPG.HPLine + "] " +
-                "\nДеньги: " + RPG.playerMoney);
+                "\nHP: " + HP + "/" + MaxHP + " [" + RPG.HPLine + "] " +
+                "\nДеньги: " + Money);
 
             Console.WriteLine("\nЧто будешь делать? Вылечиться - 1, Таверна - 2, Вернуться в лес - 0");
 
@@ -93,37 +96,43 @@ namespace RPGTestC.Locations
 
         static void GoHeal()
         {
-            Console.WriteLine("Лечение стоит " + HealPrice +
-                ".\nУ вас " + RPG.playerMoney +
-                ".\nВылечиться? Да - 1, Нет - 2");
+            Console.WriteLine($"Лечение стоит {HealPrice} ({ChargePrice} за 1 заряд)." +
+                $"\nУ вас {Money} ({healCount}/{maxHealCount} Зарядов)." +
+                $"\nВылечиться? Да - 1, Нет - 2");
 
             switch (Console.ReadLine())
             {
                 case "1":
 
-                    if (RPG.playerHP < RPG.playerMaxHP || Fight.healCount != Fight.maxHealCount)
+                    if (HP < MaxHP)
                     {
-                        if (RPG.playerMoney >= HealPrice)
+                        if (Money >= HealPrice)
                         {
-                            Fight.healCount = Fight.maxHealCount;
-                            RPG.playerHP = RPG.playerMaxHP;
-                            RPG.playerMoney -= Convert.ToInt16(HealPrice);
-                            cityBank += Convert.ToInt16(HealPrice);
+                            HP = MaxHP;
+                            Money -= Convert.ToInt16(HealPrice);
+                            cityBank += Convert.ToInt16(HealPrice/10);
                             UpdateEconomy();
 
-                            RPG.Dialogue("Здоровье/Заряды восстановлены");
+                            Console.WriteLine("Здоровье восстановлено.");
                         }
-
-                        else
-                        {
-                            RPG.Dialogue("Недостаточно денег.");
-                        }
+                        else Console.WriteLine("Недостаточно денег для восстановления здоровья.");
                     }
+                    else Console.WriteLine("Здоровье полное.");
 
-                    else
+                    if (healCount != maxHealCount)
                     {
-                        RPG.Dialogue("Здоровье/Заряды полные.");
+                        if(Money >= ChargePrice * (maxHealCount - healCount))
+                        {
+                            healCount = maxHealCount;
+                            Money -= Convert.ToInt16(ChargePrice * (maxHealCount - healCount));
+                            cityBank += Convert.ToInt16(ChargePrice * (maxHealCount - healCount) / 10);
+                            UpdateEconomy();
+
+                            RPG.Dialogue("Заряды восстановлены.");
+                        }
+                        else RPG.Dialogue("Недостаточно денег для восстановления зарядов.");
                     }
+                    else RPG.Dialogue("Заряды полные.");
                     goto case "2";
 
                 case "2":
@@ -149,13 +158,13 @@ namespace RPGTestC.Locations
             {
                 RPG.Dialogue("В таверне творится невероятная анархия. Бутылки летают из стороны в сторону, половина столов перевёрнута.", false, ConsoleColor.Yellow);
                 RPG.Dialogue("В общем, всё как и полагается.", false, ConsoleColor.Yellow);
-                RPG.gotAnarchy = true;
+                gotAnarchy = true;
             }
 
             RPG.Dialogue("\nВы садитесь за стол.");
             RPG.Dialogue("Вы тихо сидите за столом.");
 
-            switch (RPG.questNum)
+            switch (questNum)
             {
                 case 0: //Первый вход в таверну
 
@@ -187,7 +196,7 @@ namespace RPGTestC.Locations
                     RPG.Dialogue("\nОхра уходит.");
                     RPG.Dialogue("Немного посидев, вы решили вернуться в город.");
 
-                    RPG.questNum = 1;
+                    questNum = 1;
 
                     break;
 
@@ -205,7 +214,7 @@ namespace RPGTestC.Locations
                             RPG.Dialogue("\nОхра", "Недалеко от Синего Источника проживают Стражи.", false, ConsoleColor.DarkYellow);
                             RPG.Dialogue("Охра", "Мне нужна голова одного из них.", false, ConsoleColor.DarkYellow);
 
-                            if (RPG.lvl < 4) RPG.Dialogue("Охра", "Для тебя это может быть сложновато.", false, ConsoleColor.DarkYellow);
+                            if (LVL < 4) RPG.Dialogue("Охра", "Для тебя это может быть сложновато.", false, ConsoleColor.DarkYellow);
 
                             RPG.Dialogue("Охра", "Если принесёшь, то в награду я смогу тебе что-нибудь улучшить.", false, ConsoleColor.DarkYellow);
 
@@ -260,7 +269,7 @@ namespace RPGTestC.Locations
 
                             RPG.Dialogue("Охра", "А теперь к моей части уговора.", false, ConsoleColor.DarkYellow);
 
-                            RPG.questNum = 2;
+                            questNum = 2;
                             currentPlotState = QuestState.Unknown;
 
                             GearUpgrade(true);
@@ -291,7 +300,7 @@ namespace RPGTestC.Locations
                             {
                                 RPG.Dialogue("\nОхра", "Отлично, на тебя всегда можно положиться.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Хочу предупредить, это задание не из лёгких.", false, ConsoleColor.DarkYellow);
-                                if (RPG.lvl < 6) RPG.Dialogue("Охра", "Тебе придётся нелегко, поэтому рекомендую поптренироваться побольше.", false, ConsoleColor.DarkYellow);
+                                if (LVL < 6) RPG.Dialogue("Охра", "Тебе придётся нелегко, поэтому рекомендую поптренироваться побольше.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Торговец, который продаёт мне довольно редкие товары, недавно пропал без вести.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Я хочу, чтобы ты его нашёл и разузнал в чём дело.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Его маршрут был доволньно опасен. Я удивлён, что он вообще прожил так долго.", false, ConsoleColor.DarkYellow);
@@ -316,7 +325,7 @@ namespace RPGTestC.Locations
                             {
                                 RPG.Dialogue("\nОхра", "Отлично, на тебя всегда можно положиться.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Хочу предупредить, это задание не из лёгких.", false, ConsoleColor.DarkYellow);
-                                if (RPG.lvl < 6) RPG.Dialogue("Охра", "Тебе придётся нелегко, поэтому рекомендую потренироваться побольше.", false, ConsoleColor.DarkYellow);
+                                if (LVL < 6) RPG.Dialogue("Охра", "Тебе придётся нелегко, поэтому рекомендую потренироваться побольше.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Торговец, который продаёт мне довольно редкие товары, недавно пропал без вести.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Я хочу, чтобы ты его нашёл и разузнал в чём дело.", false, ConsoleColor.DarkYellow);
                                 RPG.Dialogue("Охра", "Его маршрут был доволньно опасен. Я удивлён, что он вообще прожил так долго.", false, ConsoleColor.DarkYellow);
@@ -326,10 +335,7 @@ namespace RPGTestC.Locations
                                 RPG.Dialogue("\nВы получили карту маршрута торговца.");
                             }
 
-                            else
-                            {
-                                RPG.Dialogue("\nОхра", "Ладно, твой выбор.", false, ConsoleColor.DarkYellow);
-                            }
+                            else RPG.Dialogue("\nОхра", "Ладно, твой выбор.", false, ConsoleColor.DarkYellow);
 
                             break;
 
@@ -363,7 +369,7 @@ namespace RPGTestC.Locations
 
                             RPG.Dialogue("\nОхра", "Кстати о торговле...", false, ConsoleColor.DarkYellow);
 
-                            RPG.questNum = 3;
+                            questNum = 3;
                             currentPlotState = QuestState.Unknown;
 
                             GearUpgrade(true);
@@ -384,7 +390,7 @@ namespace RPGTestC.Locations
                     if (RPG.rnd.NextDouble() <= 0.1f)
                     {
                         RPG.Dialogue("Ah shit, here we go again.", false, ConsoleColor.Yellow);
-                        RPG.ahShit = true;
+                        ahShit = true;
                     }
 
                     RPG.Dialogue("\nОхра садится за ваш стол.");
@@ -395,7 +401,7 @@ namespace RPGTestC.Locations
 
                             RPG.Dialogue("\nОхра", "Все люди здесь абсолютно бесполезны, надеюсь ты меня обрадуешь.", false, ConsoleColor.DarkYellow);
                             RPG.Dialogue("Охра", "Нужно сходить в подвал Таверны и убить живущее там нечто.", false, ConsoleColor.DarkYellow);
-                            if (RPG.lvl <= 7) RPG.Dialogue("Охра", "Хотя, тебе поможет разве что удача, чтобы справиться с ним.", false, ConsoleColor.DarkYellow);
+                            if (LVL <= 7) RPG.Dialogue("Охра", "Хотя, тебе поможет разве что удача, чтобы справиться с ним.", false, ConsoleColor.DarkYellow);
 
                             RPG.Dialogue("Охра", "Согласен?", true, ConsoleColor.DarkYellow);
 
@@ -423,7 +429,7 @@ namespace RPGTestC.Locations
                             RPG.Dialogue("\nОхра", "Я ещё не нашёл замены.", false, ConsoleColor.DarkYellow);
                             RPG.Dialogue("Охра", "Надеюсь, теперь ты согласен мне помочь.", false, ConsoleColor.DarkYellow);
 
-                            if (RPG.lvl <= 7) RPG.Dialogue("Охра", "Хоть ты и не готов.", false, ConsoleColor.DarkYellow);
+                            if (LVL <= 7) RPG.Dialogue("Охра", "Хоть ты и не готов.", false, ConsoleColor.DarkYellow);
 
                             if (AcceptQuest())
                             {
@@ -469,7 +475,7 @@ namespace RPGTestC.Locations
 
                         case QuestState.Completed:
 
-                            if (RPG.brokeIn)
+                            if (brokeOut)
                             {
 
                                 RPG.Dialogue("\nОхра", "Что ты наделал?", false, ConsoleColor.DarkYellow);
@@ -484,7 +490,7 @@ namespace RPGTestC.Locations
                             RPG.Dialogue("Охра", "Но с этим было что-то не то: слишком уж большой.", false, ConsoleColor.DarkYellow);
                             RPG.Dialogue("Охра", "Что же, раз уж ты спас мой бизнес...", false, ConsoleColor.DarkYellow);
 
-                            RPG.questNum = 4;
+                            questNum = 4;
                             currentPlotState = QuestState.Unknown;
 
                             GearUpgrade(true);
@@ -497,7 +503,7 @@ namespace RPGTestC.Locations
                 case 4:
 
                     RPG.Dialogue("В этот раз никто за вами не наблюдает.", false, ConsoleColor.DarkMagenta);
-                    RPG.Dialogue("По крайней мере вы так считаете.", false, ConsoleColor.DarkMagenta);
+                    RPG.Dialogue("По крайней мере, вы так считаете.", false, ConsoleColor.DarkMagenta);
 
                     RPG.Dialogue("\nНаконец-то.");
 
@@ -513,7 +519,64 @@ namespace RPGTestC.Locations
                             RPG.Dialogue("Охра", "Там есть ингредиенты для моего нового напитка, хотел набрать достаточно, пока ищу нового торговца.",
                                 false, ConsoleColor.DarkYellow);
                             RPG.Dialogue("Охра", "Ингредиенты я набрал, но...", false, ConsoleColor.DarkYellow);
+
                             RPG.Dialogue("\nОхра", "Я оставил там свою шляпу.", false, ConsoleColor.DarkYellow);
+
+                            RPG.Dialogue("\nВы посмотрели на Охру с немного грустным, разочарованным, но в то же время полным недовольства и умеренной злости взглядом.");
+
+                            RPG.Dialogue("\nОхра", "Не смотри на меня так, эта шляпа очень важна!", false, ConsoleColor.DarkYellow);
+                            RPG.Dialogue("Охра", "И вообще, тебе сложно, что ли? Заодно новые места увидишь!", false, ConsoleColor.DarkYellow);
+
+                            if (AcceptQuest()) RPG.Dialogue("\nОхра", "Спасибо! Жду тебя с нетерпением!", false, ConsoleColor.DarkYellow);
+                            else
+                            {
+                                RPG.Dialogue("\nОхра посмотрел на вас полным разочароания и печали взглядом.");
+
+                                RPG.Dialogue("\nОхра", "Ладно.", false, ConsoleColor.DarkYellow);
+                                RPG.Dialogue("Охра", "Но просто так я от тебя не отстану.", false, ConsoleColor.DarkYellow);
+
+                                RPG.Dialogue("\nОхра ушёл.");
+                                RPG.Dialogue("\nПодавив чувство вины, к чему вы уже привыкли, и немного посидев, вы вернулись в город.");
+                            }
+                            break;
+
+                        case QuestState.Known:
+
+                            RPG.Dialogue("\nОхра", "Ну как там с твоим решением начёт возврата моей шляпы?", true, ConsoleColor.DarkYellow);
+                            RPG.Dialogue("Охра", "Я даже скажу пожалуйста.", false, ConsoleColor.DarkYellow);
+
+                            RPG.Dialogue("\nОхра", "Пожалуйста.", false, ConsoleColor.DarkYellow);
+
+                            if (AcceptQuest()) RPG.Dialogue("\nОхра", "Спасибо!", false, ConsoleColor.DarkYellow);
+                            else
+                            {
+                                RPG.Dialogue("\nОхра посмотрел на вас полным разочароания и печали взглядом.");
+
+                                RPG.Dialogue("\nОхра", "Ладно. Даже 'пожалуйста' не помогло.", false, ConsoleColor.DarkYellow);
+                                RPG.Dialogue("Охра", "Что же ты за жестокий человек?.", false, ConsoleColor.DarkYellow);
+
+                                RPG.Dialogue("\nОхра ушёл.");
+                                RPG.Dialogue("\nСнова подавив чувство вины, и немного посидев, вы вернулись в город.");
+                            }
+                            break;
+
+                        case QuestState.Accepted:
+
+                            RPG.Dialogue("\nОхра", "Где шляпа, Искатель Приключений?", false, ConsoleColor.DarkYellow);
+
+                            RPG.Dialogue("\nОхра", "А?", false, ConsoleColor.DarkYellow);
+
+                            RPG.Dialogue("\nОхра", "Я ведь жду!", false, ConsoleColor.DarkYellow);
+
+                            RPG.Dialogue("\nОхра ушёл, не дав вам шанса высказаться.");
+
+                            RPG.Dialogue("\nНемного посидев, вы вернулись в город.");
+                            break;
+
+                        case QuestState.Completed:
+                            RPG.Dialogue("\nОхра", "Наконец-то я дождался!", false, ConsoleColor.DarkYellow);
+
+                            questNum = 5;
                             break;
                     }
 
@@ -521,9 +584,9 @@ namespace RPGTestC.Locations
 
                 case 15: //Вход в таверну, получение локации башни/ничего.
 
-                    if (!RPG.towerLoc && RPG.lvl == 15)
+                    if (!towerLoc && LVL == 15)
                     {
-                        RPG.towerLoc = true;
+                        towerLoc = true;
 
                         RPG.Dialogue("Внезапно из-за спины выходит...");
                         RPG.Dialogue("\nКто это?");
@@ -556,32 +619,34 @@ namespace RPGTestC.Locations
             if (free) RPG.Dialogue("Охра", "Что тебе нужно улучшить?", true, ConsoleColor.DarkYellow);
 
             else RPG.Dialogue("Охра", "Моя цена небольшая, " + ValueW + " монет за улучшение оружия, " + ValueA + " за улучшение брони."
-                    + "\nС каждым улучшением повышаю эффективность на 10%."
-                    + "\n\nУ вас " + RPG.playerMoney + " монет.", true, ConsoleColor.DarkYellow);
+                    + "\nС каждым улучшением повышаю эффективность на 5%."
+                    + "\n\nУ вас " + Money + " монет.", true, ConsoleColor.DarkYellow);
 
+            Console.WriteLine($"Текущие характеристики: {Damage} АТК ({DamageCoeff * 100}%)" +
+                           $"\n                         {Defence} ЗАЩ ({DefenceCoeff * 100}%)");
             Console.WriteLine("Улучшить (+5%) оружие - 1, броню - 2");
 
             switch (Console.ReadLine())
             {
                 case "1":
-                    RPG.weaponDamageCoeff += 0.05f;
-                    Fight.playerAttack = (float)Math.Round((10 + Math.Pow(2, RPG.lvl)) * RPG.weaponDamageCoeff);
+                    DamageCoeff += 0.05f;
+                    Damage = (float)Math.Round((10 + Math.Pow(2, LVL)) * DamageCoeff);
 
                     if (!free)
                     {
-                        RPG.playerMoney -= Convert.ToInt16(ValueW);
+                        Money -= Convert.ToInt16(ValueW);
                         cityBank += (float)ValueW * (TavernTax - 1);
                     }
 
                     break;
 
                 case "2":
-                    RPG.armorDefenceCoeff += 0.05f;
-                    Fight.playerDefence = (2 * RPG.lvl - 2) * RPG.armorDefenceCoeff;
+                    DefenceCoeff += 0.05f;
+                    Defence = (float)(Math.Pow(LVL, 2) - 1 / (4 * LVL + 1)) * DefenceCoeff;
 
                     if (!free)
                     {
-                        RPG.playerMoney -= Convert.ToInt16(ValueA);
+                        Money -= Convert.ToInt16(ValueA);
                         cityBank += (float)ValueA * (TavernTax - 1);
                     }
                     break;

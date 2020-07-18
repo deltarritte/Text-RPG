@@ -1,4 +1,6 @@
-﻿namespace RPGTestC.Locations
+﻿using RPGTestC.Events;
+
+namespace RPGTestC.Locations
 {
     public class Point
     {
@@ -40,6 +42,8 @@
         }
 
         public int TransitRoomIndex;
+
+        public Monster Monster = new Monster();
 
         public Point(int x, int y)
         {

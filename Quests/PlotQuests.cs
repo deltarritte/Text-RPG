@@ -2,17 +2,19 @@
 using RPGTestC.Events;
 using RPGTestC.Locations;
 using RPGTestCBuildA;
+using static RPGTestC.Player;
 using System;
 
 namespace RPGTestC.Quests
 {
     public class PlotQuests
     {
+        static Monster[] monster;
+
         public static void Quest()
         {
             City.currentPlotState = City.QuestState.Completed;
-
-            switch (RPG.questNum)
+            switch (questNum)
             {
                 case 1:
                     Console.Clear();
@@ -25,12 +27,17 @@ namespace RPGTestC.Quests
                     RPG.Dialogue("\nИз-за деревьев выходит Страж.");
                     RPG.Dialogue("\nЧёрт, подумали вы.");
 
-                    Fight.MnstrHP = 100 + 20 * RPG.lvl;
-                    Fight.MnstrAttack = 20 + 2 * RPG.lvl;
-                    Fight.Name = "Страж";
-                    Fight.mnstrType = Fight.MonsterType.Standart;
-
-                    Fight.Init(true);
+                    monster = new Monster[1]
+                    {
+                        new Monster
+                        {
+                            HP = 100 + 20 * LVL,
+                            Damage = 20 + 2 * LVL,
+                            Name = "Страж",
+                            Type = Monster.MType.Standart,
+                        }
+                    };
+                    Fight.Init(monster, true);
                     break;
 
                 case 2:
@@ -44,7 +51,7 @@ namespace RPGTestC.Quests
                     RPG.Dialogue("\n...");
                     RPG.Dialogue("\nЭто будет долгий поход.");
 
-                    Dungeons.Init(RPG.questNum);
+                    Dungeons.Init(questNum);
 
                     RPG.Dialogue("\nВы подошли к разрушенной повозке.");
                     RPG.Dialogue("\nА рядом с ней...");
@@ -63,16 +70,22 @@ namespace RPGTestC.Quests
                     RPG.Dialogue("\nЧто бы это не значило.");
                     RPG.Dialogue("\nВы начали возвращаться.");
 
-                    Dungeons.Init(RPG.questNum, 1);
+                    Dungeons.Init(questNum, 1);
 
                     RPG.Dialogue("\nПеред вами стоит монстр.");
                     RPG.Dialogue("Что не удивительно.");
 
-                    Fight.MnstrHP = 400 + 30 * RPG.lvl;
-                    Fight.MnstrAttack = 30 + 3 * RPG.lvl;
-                    Fight.Name = "Перегородник";
-                    Fight.mnstrType = Fight.MonsterType.Fire;
-                    Fight.Init(true);
+                    monster = new Monster[1]
+                    {
+                        new Monster
+                        {
+                            HP = 400 + 30 * LVL,
+                            Damage = 30 + 3 * LVL,
+                            Name = "Заградитель",
+                            Type = Monster.MType.Fire
+                        }
+                    };
+                    Fight.Init(monster, true);
                     break;
 
                 case 3:
@@ -85,21 +98,27 @@ namespace RPGTestC.Quests
                     RPG.Dialogue("В конце подвала видно только чёрный туман.");
                     RPG.Dialogue("\nВы начинаете движение в его сторону.");
 
-                    Dungeons.Init(RPG.questNum);
+                    Dungeons.Init(questNum);
 
                     RPG.Dialogue("\nКак и ожидалось:");
                     RPG.Dialogue("Внутри тумана монстр.");
 
-                    Fight.MnstrHP = 600 + 40 * RPG.lvl;
-                    Fight.MnstrAttack = 40 + 8 * RPG.lvl;
-                    Fight.Name = "Туманный зверь";
-                    Fight.mnstrType = Fight.MonsterType.Dark;
-                    Fight.Init(true);
+                    monster = new Monster[1]
+                    {
+                        new Monster
+                        {
+                            HP = 600 + 40 * LVL,
+                            Damage = 40 + 8 * LVL,
+                            Name = "Туманный зверь",
+                            Type = Monster.MType.Dark
+                        }
+                    };
+                    Fight.Init(monster, true);
 
                     RPG.Dialogue("Тело монстра рассеялось в тумане.");
                     RPG.Dialogue("Время возвращаться.");
 
-                    Dungeons.Init(RPG.questNum, 1);
+                    Dungeons.Init(questNum, 1);
 
                     RPG.Dialogue("\nПохоже, что дверь заклинило.");
                     RPG.Dialogue("Можно попробовать найти другой выход.");
@@ -107,11 +126,11 @@ namespace RPGTestC.Quests
 
                     Console.WriteLine("Что делать?" +
                         "\n1 - Выломать" +
-                        "\n2 - Найти выход");
+                        "\n2 - Найти другой выход");
 
                     if(Console.ReadLine() == "1")
                     {
-                        RPG.brokeIn = true;
+                        brokeOut = true;
 
                         RPG.Dialogue("\nВы успешно выломали дверь.");
                         RPG.Dialogue("Будет очень неприятно снова встретить Охру.");
@@ -122,7 +141,7 @@ namespace RPGTestC.Quests
                         RPG.Dialogue("\nНет, ломать дверь действительно не стоит.");
                         RPG.Dialogue("Ведь из подвала есть ещё один выход в город.");
 
-                        Dungeons.Init(RPG.questNum, 2);
+                        Dungeons.Init(questNum, 2);
 
                         RPG.Dialogue("\nНу вот.");
                         RPG.Dialogue("И не нужно никакой излишней жестокости!");

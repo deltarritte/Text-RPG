@@ -47,10 +47,12 @@
     <Compile Include="Achievements\AchievementMenu.cs" />
     <Compile Include="Achievements\Achievement.cs" />
     <Compile Include="Events\Fight.cs" />
+    <Compile Include="Events\Monster.cs" />
     <Compile Include="Locations\City.cs" />
     <Compile Include="Locations\Point.cs" />
     <Compile Include="Locations\Room.cs" />
     <Compile Include="Locations\Dungeons.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Quests\PlotQuests.cs" />
     <Compile Include="RPG.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

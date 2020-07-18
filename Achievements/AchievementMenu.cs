@@ -1,6 +1,7 @@
 ﻿using RPGTestCBuildA;
 using System;
 using System.Collections.Generic;
+using static RPGTestC.Player;
 
 namespace RPGTestC.Achievements
 {
@@ -101,21 +102,21 @@ namespace RPGTestC.Achievements
         {
             Title = "Синее Смещение.",
             Description = "Выполнить квест по убийству Стража.",
-            Checker = quest1_Check,
+            Checker = Quest1_Check,
         };
 
         public static Achievement quest2 = new Achievement
         {
             Title = "Расследование Века.",
             Description = "Обнаружить тело торговца.",
-            Checker = quest2_Check,
+            Checker = Quest2_Check,
         };
 
         public static Achievement quest3 = new Achievement
         {
             Title = "Неугодный Житель.",
             Description = "Выгнать нечто из подвала таверны.",
-            Checker = quest3_Check,
+            Checker = Quest3_Check,
         };
         #endregion
 
@@ -123,35 +124,35 @@ namespace RPGTestC.Achievements
         {
             Title = "Анархия и Хаос.",
             Description = "Застать момент анархии в Таверне.",
-            Checker = anarchy_Check,
+            Checker = Anarchy_Check,
             Color = ConsoleColor.Yellow
         };
         public static Achievement memeref = new Achievement
         {
             Title = "Отсылка к старому мему.",
             Description = "Сделать отсылку к тупому мему.",
-            Checker = anarchy_Check,
+            Checker = Memeref_Check,
             Color = ConsoleColor.Yellow
         };
         public static Achievement brokenDoor = new Achievement
         {
             Title = "Прямой подход.",
             Description = "Выломать дверь, ведущую в подвал.",
-            Checker = brokenDoor_Check,
+            Checker = BrokenDoor_Check,
             Color = ConsoleColor.Yellow
         };
         public static Achievement nonBrute = new Achievement
         {
             Title = "Дверной пацифист.",
             Description = "Найти мирное решение проблемы.",
-            Checker = nonBrute_Check,
+            Checker = NonBrute_Check,
             Color = ConsoleColor.Yellow
         };
         public static Achievement tower = new Achievement
         {
             Title = "Загадочная встреча.",
             Description = "Узнать о существовании Башни.",
-            Checker = tower_Check,
+            Checker = Tower_Check,
         };
 
         public static void UpdateList()
@@ -186,28 +187,28 @@ namespace RPGTestC.Achievements
         }
 
         #region Checks
-        private static bool Prog1_Check() => RPG.lvl >= 2;
-        private static bool Prog2_Check() => RPG.lvl >= 3;
-        private static bool Prog3_Check() => RPG.lvl >= 4;
-        private static bool Prog4_Check() => RPG.lvl >= 5;
-        private static bool Prog5_Check() => RPG.lvl >= 6;
-        private static bool Prog6_Check() => RPG.lvl >= 7;
-        private static bool Prog7_Check() => RPG.lvl >= 8;
-        private static bool Prog8_Check() => RPG.lvl >= 9;
-        private static bool Prog9_Check() => RPG.lvl >= 10;
-        private static bool Prog10_Check() => RPG.lvl >= 11;
-        private static bool Prog11_Check() => RPG.lvl >= 12;
-        private static bool Prog12_Check() => RPG.lvl >= 13;
-        private static bool Prog13_Check() => RPG.lvl >= 14;
-        private static bool Prog14_Check() => RPG.lvl >= 15;
-        private static bool quest1_Check() => RPG.questNum >= 2;
-        private static bool quest2_Check() => RPG.questNum >= 3;
-        private static bool quest3_Check() => RPG.questNum >= 4;
-        private static bool anarchy_Check() => RPG.gotAnarchy;
-        private static bool memeref_Check() => RPG.ahShit;
-        private static bool brokenDoor_Check() => RPG.brokeIn;
-        private static bool nonBrute_Check() => !RPG.brokeIn && RPG.questNum > 3;
-        private static bool tower_Check() => RPG.towerLoc;
+        private static bool Prog1_Check() => LVL >= 2;
+        private static bool Prog2_Check() => LVL >= 3;
+        private static bool Prog3_Check() => LVL >= 4;
+        private static bool Prog4_Check() => LVL >= 5;
+        private static bool Prog5_Check() => LVL >= 6;
+        private static bool Prog6_Check() => LVL >= 7;
+        private static bool Prog7_Check() => LVL >= 8;
+        private static bool Prog8_Check() => LVL >= 9;
+        private static bool Prog9_Check() => LVL >= 10;
+        private static bool Prog10_Check() => LVL >= 11;
+        private static bool Prog11_Check() => LVL >= 12;
+        private static bool Prog12_Check() => LVL >= 13;
+        private static bool Prog13_Check() => LVL >= 14;
+        private static bool Prog14_Check() => LVL >= 15;
+        private static bool Quest1_Check() => questNum >= 2;
+        private static bool Quest2_Check() => questNum >= 3;
+        private static bool Quest3_Check() => questNum >= 4;
+        private static bool Anarchy_Check() => gotAnarchy;
+        private static bool Memeref_Check() => ahShit;
+        private static bool BrokenDoor_Check() => brokeOut;
+        private static bool NonBrute_Check() => !brokeOut && questNum > 3;
+        private static bool Tower_Check() => towerLoc;
         #endregion
 
         public static void ShowList()
