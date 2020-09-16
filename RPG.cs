@@ -1,8 +1,9 @@
-using RPGTestC;
 using RPGTestC.Achievements;
 using RPGTestC.Events;
+using RPGTestC.Items;
 using RPGTestC.Locations;
 using RPGTestC.Quests;
+using RPGTestC.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,7 @@ using static RPGTestC.Player;
  * Well, doing mistakes is my job anyway, so I have no room to complain.
 /*/
 
-namespace RPGTestCBuildA
+namespace RPGTestC
 {
     public class RPG
     {
@@ -108,7 +109,7 @@ namespace RPGTestCBuildA
 
             Console.WriteLine("\nЛес - 1, Задание - 2, Город - 3");
             if (towerLoc) Console.WriteLine("Заброшенная башня - 9");
-            Console.WriteLine("Сохранить игру - s, Загрузить игру - l, Достижения - a");
+            Console.WriteLine("Сохранить игру - s, Загрузить игру - l, Достижения - a, Инвентарь - i");
 
             switch (Console.ReadLine())
             {
@@ -139,7 +140,7 @@ namespace RPGTestCBuildA
                     {
                         Console.WriteLine("Доступно сюжетное задание.");
 
-                        switch (Player.questNum)
+                        switch (questNum)
                         {
                             case 1:
                                 Console.WriteLine("Рекомендуемый уровень: 4");
@@ -175,7 +176,7 @@ namespace RPGTestCBuildA
                     break;
 
                 case "9":
-                    if (Player.towerLoc)
+                    if (towerLoc)
                     {
                         Tower.Entry();
                         Console.Clear();
@@ -188,13 +189,17 @@ namespace RPGTestCBuildA
                     Console.Clear();
                     break;
 
+                case "i":
+                    InventoryMenu.ShowMenu();
+                    break;
+
                 case "l":
-                    Player.LoadProgress(false);
+                    LoadProgress(false);
                     Console.Clear();
                     break;
 
                 case "s":
-                    Player.SaveProgress(true);
+                    SaveProgress(true);
                     Console.Clear();
                     break;
 
@@ -235,6 +240,11 @@ namespace RPGTestCBuildA
 
                 case "fight 2":
                     Fight.Init(2);
+                    break;
+
+                case "bring balance":
+                    Passive_Inventory[0] = Item.ItemList[4];
+                    Passive_Inventory[1] = Item.ItemList[2];
                     break;
 
                 case "scrooge":

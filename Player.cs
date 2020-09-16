@@ -1,10 +1,11 @@
-﻿using RPGTestC.Locations;
+﻿using RPGTestC.Items;
+using RPGTestC.Items.Armour;
+using RPGTestC.Items.Weapons;
+using RPGTestC.Locations;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace RPGTestC
 {
@@ -26,15 +27,30 @@ namespace RPGTestC
         public static float HP = 50;
         public static float MaxHP = 50 + (float)Math.Pow(2,LVL);
 
-        static public float Damage = (float)Math.Round((10 + Math.Pow(2, LVL))) * DamageCoeff;       // Значение атаки игрока
-        static public float Defence = (float)(Math.Pow(LVL, 2) - 1 / (4 * LVL + 1)) * DefenceCoeff;     // Значение защиты игрока
+        public static Item[] Inventory = new Item[3]
+        {
+            Item.ItemList[3],
+            Item.ItemList[1],
+            Item.ItemList[5]
+        };
+
+        public static Item[] Passive_Inventory = new Item[8]
+        {
+            Item.ItemList[0],
+            Item.ItemList[0],
+            Item.ItemList[0],
+            Item.ItemList[0],
+            Item.ItemList[0],
+            Item.ItemList[0],
+            Item.ItemList[0],
+            Item.ItemList[0],
+        };
+        
         static public Status PStatus;      // Переменная статуса игрока
         static public int healCount = 3;        // Кол-во зарядов
         static public int maxHealCount = 3;     // Макс. кол-во зарядов
 
         public const float critCoeff = 1.75f;          // Коэффициент критического урона
-        public static float DamageCoeff = 1f;
-        public static float DefenceCoeff = 1f;
 
         public static int questNum = 0; //Номер квеста, который в процессе выполнения (0 - игрок не был в таверне, 1 - Страж в Голубой Долине и т. д., всего 14(пока что))
 
@@ -50,8 +66,6 @@ namespace RPGTestC
 
         static public float GetMaxXP() => 25 * (float)Math.Round(Math.Pow(1.5, LVL), 1);
         static public float GetMaxHP() => 50 + (float)Math.Pow(2, LVL);
-        static public float GetDamage() => (float)Math.Round((10 + Math.Pow(2, LVL))) * DamageCoeff;
-        static public float GetDefence() => (float)(Math.Pow(LVL, 2) - 1 / (4 * LVL + 1)) * DefenceCoeff;
 
         static public void SaveProgress(bool currentSave)
         {
@@ -60,15 +74,11 @@ namespace RPGTestC
                 City.cityBank,
                 LVL,
                 XP,
-                MaxXP,
                 HP,
-                MaxHP,
                 Money,
                 City.currentPlotState,
                 questNum,
                 City.wasInCity,
-                DamageCoeff,
-                DefenceCoeff,
                 MasteryPoints,
                 towerLoc,
                 Tower.mageName,
@@ -106,13 +116,8 @@ namespace RPGTestC
                             break;
                     }
                 }
-
-                else
-                {
-                    SaveProgress(true);
-                }
+                else SaveProgress(true);
             }
-
             else
             {
                 try
@@ -166,15 +171,13 @@ namespace RPGTestC
 
                     line = sr.ReadLine();
                     XP = Convert.ToInt32(line);
-
-                    line = sr.ReadLine();
-                    MaxXP = Convert.ToInt32(line);
+                    
+                    MaxXP = GetMaxXP();
 
                     line = sr.ReadLine();
                     HP = Convert.ToInt32(line);
-
-                    line = sr.ReadLine();
-                    MaxHP = Convert.ToInt32(line);
+                    
+                    MaxHP = GetMaxHP();
 
                     line = sr.ReadLine();
                     Money = Convert.ToInt32(line);
@@ -187,12 +190,6 @@ namespace RPGTestC
 
                     line = sr.ReadLine();
                     City.wasInCity = Convert.ToBoolean(line);
-
-                    line = sr.ReadLine();
-                    DamageCoeff = Convert.ToSingle(line);
-
-                    line = sr.ReadLine();
-                    DefenceCoeff = Convert.ToSingle(line);
 
                     line = sr.ReadLine();
                     MasteryPoints = Convert.ToInt32(line);
@@ -234,8 +231,6 @@ namespace RPGTestC
 
                 MaxXP = GetMaxXP();
                 MaxHP = GetMaxHP();
-                Damage = GetDamage();
-                Defence = GetDefence();
 
                 cheat = false;
             }

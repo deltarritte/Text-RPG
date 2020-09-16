@@ -1,7 +1,4 @@
-﻿using RPGTestC.Achievements;
-using RPGTestC.Events;
-using RPGTestC.Quests;
-using RPGTestCBuildA;
+﻿using RPGTestC.Quests;
 using static RPGTestC.Player;
 using System;
 
@@ -49,8 +46,8 @@ namespace RPGTestC.Locations
             ChargePrice = Math.Round(2 * HealTax, 0);
             TavernPrice = Math.Round(200 * TavernTax);
 
-            ValueW = TavernPrice * DamageCoeff; // Цена на улучшение оружия
-            ValueA = TavernPrice * DefenceCoeff; //        ...       брони
+            ValueW = TavernPrice * (Inventory[0].LVL + 1); // Цена на улучшение оружия
+            ValueA = TavernPrice * (Inventory[1].LVL + 1); //        ...       брони
         }
 
         static public void GoToCity()
@@ -622,40 +619,49 @@ namespace RPGTestC.Locations
                     + "\nС каждым улучшением повышаю эффективность на 5%."
                     + "\n\nУ вас " + Money + " монет.", true, ConsoleColor.DarkYellow);
 
-            Console.WriteLine($"Текущие характеристики: {Damage} АТК ({DamageCoeff * 100}%)" +
-                           $"\n                         {Defence} ЗАЩ ({DefenceCoeff * 100}%)");
-            Console.WriteLine("Улучшить (+5%) оружие - 1, броню - 2");
+            Console.WriteLine($"Текущие характеристики: {Inventory[0].baseDamage} АТК ({Inventory[0].LVL}/{Inventory[0].MaxLVL} УР)" +
+                           $"\n                         {Inventory[1].Defence} ЗАЩ ({Inventory[1].LVL}/{Inventory[1].MaxLVL} УР)");
+
+            Console.WriteLine("Улучшить (+1 УР)");
+            if (Inventory[0].Upgradeable()) Console.WriteLine("Оружие - 1");
+            if (Inventory[1].Upgradeable()) Console.WriteLine("Броню - 2");
 
             switch (Console.ReadLine())
             {
                 case "1":
-                    DamageCoeff += 0.05f;
-                    Damage = (float)Math.Round((10 + Math.Pow(2, LVL)) * DamageCoeff);
-
-                    if (!free)
+                    if (Inventory[0].Upgradeable())
                     {
-                        Money -= Convert.ToInt16(ValueW);
-                        cityBank += (float)ValueW * (TavernTax - 1);
-                    }
+                        Inventory[0].LVL += 1;
+                        Inventory[0].Upgrade();
 
-                    break;
+                        if (!free)
+                        {
+                            Money -= Convert.ToInt16(ValueW);
+                            cityBank += (float)ValueW * (TavernTax - 1);
+                        }
+                        break;
+                    }
+                    else goto default;
 
                 case "2":
-                    DefenceCoeff += 0.05f;
-                    Defence = (float)(Math.Pow(LVL, 2) - 1 / (4 * LVL + 1)) * DefenceCoeff;
-
-                    if (!free)
+                    if (Inventory[1].Upgradeable())
                     {
-                        Money -= Convert.ToInt16(ValueA);
-                        cityBank += (float)ValueA * (TavernTax - 1);
+                        Inventory[1].LVL += 1;
+                        Inventory[1].Upgrade();
+
+                        if (!free)
+                        {
+                            Money -= Convert.ToInt16(ValueA);
+                            cityBank += (float)ValueA * (TavernTax - 1);
+                        }
+                        break;
                     }
-                    break;
+                    else goto default;
 
                 default:
-                    GearUpgrade(free);
+                    if (Inventory[0].Upgradeable() || Inventory[1].Upgradeable()) GearUpgrade(free);
                     break;
             }
-
             UpdateEconomy();
 
             RPG.Dialogue("Охра", "Ещё увидимся.", false, ConsoleColor.DarkYellow);
@@ -663,14 +669,13 @@ namespace RPGTestC.Locations
 
         static bool AcceptQuest()
         {
-            Console.WriteLine("\nВзять задание? Да - 1, Нет - 2");
+            Console.WriteLine("\nВзять задание? Да - 1, Нет - Любая другая клавиша");
 
             if (Console.ReadKey().Key == ConsoleKey.D1)
             {
                 currentPlotState = QuestState.Accepted;
                 return true;
             }
-
             else
             {
                 currentPlotState = QuestState.Known;

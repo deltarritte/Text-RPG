@@ -1,6 +1,4 @@
-﻿using RPGTestCBuildA;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace RPGTestC.Achievements
 {
