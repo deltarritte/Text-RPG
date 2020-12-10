@@ -4,8 +4,9 @@ namespace RPGTestC.Items.Armour
 {
     public class Default_A : Item
     {
-        public Default_A()
+        public Default_A(int id)
         {
+            ID = id;
             IType = Type.Armour;
             MaxLVL = 3;
             Prefix = "Default";
@@ -15,7 +16,7 @@ namespace RPGTestC.Items.Armour
             Defence = 1;
         }
 
-        public override void OnUse(Monster monster) { }
+        public override void OnUse(Monster[] monsters, int index = 0) { }
 
         public override void Upgrade() => Defence = LVL + 1;
     }

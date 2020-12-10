@@ -17,7 +17,7 @@ namespace RPGTestC.UI
 
             Console.WriteLine($"\nТекущая броня: {Player.Inventory[1].GetName()} ({Player.Inventory[1].LVL} УР)" +
                 $"\n{Player.Inventory[1].Description}" +
-                $"\nУрон: {Player.Inventory[1].Defence} ЗАЩ");
+                $"\nЗащита: {Player.Inventory[1].Defence} ЗАЩ");
 
             Console.WriteLine($"\nТекущий предмет: {Player.Inventory[2].GetName()}" +
                 $"\n{Player.Inventory[2].Description}");

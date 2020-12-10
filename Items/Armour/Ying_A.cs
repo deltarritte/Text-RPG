@@ -12,8 +12,9 @@ namespace RPGTestC.Items.Armour
     {
         const float Absorb = 0.3f;
 
-        public Ying_A()
+        public Ying_A(int id)
         {
+            ID = id;
             IType = Type.Armour;
             MaxLVL = 20;
             LVL = 15;
@@ -24,14 +25,14 @@ namespace RPGTestC.Items.Armour
             Defence = 77;
         }
 
-        public override void OnUse(Monster monster)
+        public override void OnUse(Monster[] monsters, int index = 0)
         {
             if (PStatus != 0)
             {
                 Fight.effectCount = 0;
                 PStatus = 0;
             }
-            monster.Damage *= Absorb;
+            monsters[index].Damage *= Absorb;
         }
 
         public override void Upgrade() => Defence = 77 * LVL / 15f;

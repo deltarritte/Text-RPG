@@ -16,6 +16,7 @@ namespace RPGTestC.Items
         }
         public Type IType = Type.None;
 
+        public int ID = 0;
         public int LVL = 0;
         public int MaxLVL = 0;
         public string Prefix;
@@ -28,6 +29,13 @@ namespace RPGTestC.Items
 
         public bool Usable = true;
 
+        public Item() { }
+
+        public Item(int id)
+        {
+            ID = id;
+        }
+
         public string GetName()
         {
             if (Prefix != "") return $"{Prefix} " + Name;
@@ -38,21 +46,19 @@ namespace RPGTestC.Items
 
         // Для эффектов (обычно действующих на игрока)
         public virtual void OnUse() { }
-        // Для эффектов, действующих на нападающего (обычно используется для оружия)
-        public virtual void OnUse(Monster monster) { }
-        // Для эффектов, действующих на нападающих/всех(не исключая игрока) (обычно используется для предметов)
-        public virtual void OnUse(Monster[] monsters) { }
+        // Для эффектов, действующих на нападающих/всех(не исключая игрока)
+        public virtual void OnUse(Monster[] monsters, int index = 0) { }
         // У каждого предмета статы улучшаются индивидуально, поэтому приходится так выкручиваться
         public virtual void Upgrade() { }
 
         public static Item[] ItemList = new Item[7]
         {
             new None_Item(),    // 0 - Ничего
-            new Default_A(),    // 1 - Стандартная броня
-            new Ying_A(),       // 2 - Броня Инь
-            new Default_W(),    // 3 - Стандартное оружие
-            new Yang_W(),       // 4 - Меч Ян
-            new PotionBag(),    // 5 - Сумка с Зельями
+            new Default_A(1),    // 1 - Стандартная броня
+            new Ying_A(2),       // 2 - Броня Инь
+            new Default_W(3),    // 3 - Стандартное оружие
+            new Yang_W(4),       // 4 - Меч Ян
+            new PotionBag(5),    // 5 - Сумка с Зельями
             new None_Item(),    // 6 - Зеркало Баланса
         };
     }

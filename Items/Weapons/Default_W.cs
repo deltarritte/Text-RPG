@@ -4,8 +4,9 @@ namespace RPGTestC.Items.Weapons
 {
     public class Default_W : Item
     {
-        public Default_W()
+        public Default_W(int id)
         {
+            ID = id;
             IType = Type.Weapon;
             MaxLVL = 3;
             Prefix = "Default";
@@ -15,7 +16,7 @@ namespace RPGTestC.Items.Weapons
             baseDamage = 11;
         }
 
-        public override void OnUse(Monster monster)
+        public override void OnUse(Monster[] monsters, int index = 0)
         {
             Damage = baseDamage;
         }

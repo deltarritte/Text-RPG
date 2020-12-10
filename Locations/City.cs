@@ -1,6 +1,7 @@
 ﻿using RPGTestC.Quests;
 using static RPGTestC.Player;
 using System;
+using RPGTestC.Events;
 
 namespace RPGTestC.Locations
 {
@@ -182,14 +183,26 @@ namespace RPGTestC.Locations
 
                     RPG.Dialogue("\nОхра", "Называется 'Чёрная Дыра'. Называется так из-за цвета, но говорят, что 'уносит' не хуже чёрной дыры.", false, ConsoleColor.DarkYellow);
 
-                    RPG.Dialogue("\nВы вежливо отказываетесь.");
+                    Console.WriteLine("\nВыпить 'Чёрную Дыру'? Да - 1, Нет - Любая другая клавиша");
 
-                    RPG.Dialogue("\nОхра", "Не из тех, кто любит выпить? Что же, тогда тебе здесь практически незачем быть!", false, ConsoleColor.DarkYellow);
-                    RPG.Dialogue("Охра", "У меня есть безалкогольные варианты, но бесплатно я их раздавать не собираюсь.", false, ConsoleColor.DarkYellow);
-                    RPG.Dialogue("Охра", "Ладно, мне надо руководить этим местом, чтобы снова не возникли анархия и хаос. Увидимся позже.", false, ConsoleColor.DarkYellow);
+                    if (Console.ReadKey().Key == ConsoleKey.D1 || Console.ReadKey().Key == ConsoleKey.NumPad1)
+                    {
+                        BHDweller = true;
+                        Monster mnstr = new Monster(true) { Damage = 20, HP = 120, LVL = 1, Name = "Обитатель чёрной дыры", Type = Monster.MType.Dark };
 
-                    RPG.Dialogue("\nСнова?");
+                        Fight.Init(new Monster[1] { mnstr }, false);
+                    }
+                    else
+                    {
+                        RPG.Dialogue("\nВы вежливо отказываетесь.");
 
+                        RPG.Dialogue("\nОхра", "Не из тех, кто любит выпить? Что же, тогда тебе здесь практически незачем быть!", false, ConsoleColor.DarkYellow);
+                        RPG.Dialogue("Охра", "У меня есть безалкогольные варианты, но бесплатно я их раздавать не собираюсь.", false, ConsoleColor.DarkYellow);
+                        RPG.Dialogue("Охра", "Ладно, мне надо руководить этим местом, чтобы снова не возникли анархия и хаос. Увидимся позже.", false, ConsoleColor.DarkYellow);
+
+                        RPG.Dialogue("\nСнова?");
+                    }
+                    
                     RPG.Dialogue("\nОхра уходит.");
                     RPG.Dialogue("Немного посидев, вы решили вернуться в город.");
 
@@ -671,7 +684,7 @@ namespace RPGTestC.Locations
         {
             Console.WriteLine("\nВзять задание? Да - 1, Нет - Любая другая клавиша");
 
-            if (Console.ReadKey().Key == ConsoleKey.D1)
+            if (Console.ReadKey().Key == ConsoleKey.D1 || Console.ReadKey().Key == ConsoleKey.NumPad1)
             {
                 currentPlotState = QuestState.Accepted;
                 return true;

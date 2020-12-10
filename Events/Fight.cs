@@ -227,7 +227,7 @@ namespace RPGTestC.Events
 
             if (!monsters[index].isInvincible && atksuc <= strikeChance)
             {
-                Inventory[0].OnUse(monsters[index]);
+                Inventory[0].OnUse(monsters, index);
                 if (Crit >= 8)
                 {
                     monsters[index].HP -= Inventory[0].Damage * critCoeff * strikeMultiplier;
@@ -277,7 +277,7 @@ namespace RPGTestC.Events
 
                     #region Attack
 
-                    Inventory[1].OnUse(monsters[i]);
+                    Inventory[1].OnUse(monsters, i);
 
                     GetTypeSpecAtk(monsters[i]);
 

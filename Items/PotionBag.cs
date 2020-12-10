@@ -5,14 +5,15 @@ namespace RPGTestC.Items
 {
     public class PotionBag : Item
     {
-        public PotionBag()
+        public PotionBag(int id)
         {
+            ID = id;
             IType = Type.Item;
             Name = "Сумка с зельями";
             Description = "Сумка с 4-мя видами зелий. Зелье, взятое из сумки - случайное. Будьте осторожны.";
         }
 
-        public override void OnUse(Monster[] monsters)
+        public override void OnUse(Monster[] monsters, int index = 0)
         {
             Random rnd = new Random();
             int potion = rnd.Next(1, 5);
@@ -39,9 +40,9 @@ namespace RPGTestC.Items
 
                 // damage a random monster
                 case 3:
-                    int index = rnd.Next(0, monsters.Length - 1);
-                    monsters[index].HP -= 31 - 16 / (monsters[index].LVL + 1);
-                    RPG.Dialogue($"Необычно Конкретное Зелье! (Монстру {index} было нанесено {31 - 16 / (monsters[index].LVL + 1)})", true, ConsoleColor.Green);
+                    int idx = rnd.Next(0, monsters.Length - 1);
+                    monsters[idx].HP -= 31 - 16 / (monsters[idx].LVL + 1);
+                    RPG.Dialogue($"Необычно Конкретное Зелье! (Монстру {idx} было нанесено {31 - 16 / (monsters[idx].LVL + 1)})", true, ConsoleColor.Green);
                     break;
 
                 // damage the player

@@ -12,8 +12,9 @@ namespace RPGTestC.Items.Weapons
         const float Multiplier = 1.5f;
         const float DarkMultiplier = 2f;
 
-        public Yang_W()
+        public Yang_W(int id)
         {
+            ID = id;
             IType = Type.Weapon;
             MaxLVL = 20;
             LVL = 15;
@@ -23,9 +24,9 @@ namespace RPGTestC.Items.Weapons
             baseDamage = 77;
         }
 
-        public override void OnUse(Monster monster)
+        public override void OnUse(Monster[] monsters, int index = 0)
         {
-            switch (monster.Type)
+            switch (monsters[index].Type)
             {
                 case Monster.MType.Standart:
                 case Monster.MType.Poisonous:

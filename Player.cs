@@ -19,16 +19,17 @@ namespace RPGTestC
             Frozen,
             Blind
         }
-
+        
         public static int LVL = 0;
         public static float XP = 0;
         public static float MaxXP = 25;
 
         public static float HP = 50;
-        public static float MaxHP = 50 + (float)Math.Pow(2,LVL);
+        public static float MaxHP = 50 + (float)Math.Pow(2,LVL) - 1;
 
         public static Item[] Inventory = new Item[3]
         {
+            //0-Weapon, 1-Armour, 2-Special Item
             Item.ItemList[3],
             Item.ItemList[1],
             Item.ItemList[5]
@@ -61,6 +62,7 @@ namespace RPGTestC
         static public bool gotAnarchy = false;  // Получено ли секретное достижение 
         static public bool ahShit = false;      // Получено ли секретное достижение
         static public bool brokeOut = false;    // Выбил ли игрок дверь
+        static public bool BHDweller = false;   // Выпил ли игрок чёрную дыру
 
         static public string savename;
 
@@ -85,7 +87,20 @@ namespace RPGTestC
                 Tower.wasIntroduced,
                 gotAnarchy,
                 ahShit,
-                brokeOut
+                brokeOut,
+                BHDweller,
+            };
+
+            foreach (Item it in Inventory)
+            {
+                saveList.Add(it.ID);
+                saveList.Add(it.LVL);
+            };
+
+            foreach (Item it in Passive_Inventory)
+            {
+                saveList.Add(it.ID);
+                saveList.Add(it.LVL);
             };
 
             if (!currentSave)
@@ -97,16 +112,19 @@ namespace RPGTestC
                     switch (Console.ReadKey().Key)
                     {
                         case ConsoleKey.D1:
+                        case ConsoleKey.NumPad1:
                             SaveProgress(true);
                             break;
 
                         case ConsoleKey.D2:
+                        case ConsoleKey.NumPad2:
                             Console.WriteLine("Введите другое название файла сохранения (Образец: C:\\saveFile.txt)");
                             savename = Console.ReadLine();
                             SaveProgress(false);
                             break;
 
                         case ConsoleKey.D3:
+                        case ConsoleKey.NumPad3:
                             LoadProgress(true);
                             break;
 
@@ -143,6 +161,9 @@ namespace RPGTestC
         
         static public void LoadProgress(bool currentSave)
         {
+            int ID;
+            int ILVL;
+
             if (!currentSave)
             {
                 Console.WriteLine("Введите название загружаемого файла (Образец: C:\\saveFile.txt)");
@@ -212,6 +233,44 @@ namespace RPGTestC
                     line = sr.ReadLine();
                     brokeOut = Convert.ToBoolean(line);
 
+                    line = sr.ReadLine();
+                    BHDweller = Convert.ToBoolean(line);
+
+                    #region Inventory Loading (Leave for last)
+
+                    int i = 0;
+                    foreach (Item InvIt in Inventory)
+                    {
+                        line = sr.ReadLine();
+                        ID = Convert.ToInt16(line);
+                        foreach (Item it in Item.ItemList)
+                            if (ID == it.ID)
+                            {
+                                Inventory[i] = Item.ItemList[ID];
+                                break;
+                            }
+
+                        line = sr.ReadLine();
+                        ILVL = Convert.ToInt16(line);
+
+                        InvIt.LVL = ILVL;
+                        i++;
+                    }
+
+                    i = 0;
+                    foreach (Item InvIt in Passive_Inventory)
+                    {
+                        line = sr.ReadLine();
+                        ID = Convert.ToInt16(line);
+                        foreach (Item it in Item.ItemList) if (ID == it.ID) Passive_Inventory[i] = Item.ItemList[ID];
+
+                        line = sr.ReadLine();
+                        ILVL = Convert.ToInt16(line);
+
+                        InvIt.LVL = ILVL;
+                        i++;
+                    }
+                    #endregion
                 }
                 catch
                 {
