@@ -2,11 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/RPGTestC/v15
-/bin/Debug/b
-/bin/Debug/g
-/bin/Debug/1
-/bin/Debug/ф
-/bin/Debug/p
-/bin/Debug/t
-/bin/Debug/е
+/.vs
+/bin
+/obj
+/Properties
