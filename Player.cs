@@ -4,6 +4,7 @@ using RPGTestC.Items.Weapons;
 using RPGTestC.Locations;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -30,21 +31,21 @@ namespace RPGTestC
         public static Item[] Inventory = new Item[3]
         {
             //0-Weapon, 1-Armour, 2-Special Item
-            Item.ItemList[3],
-            Item.ItemList[1],
-            Item.ItemList[5]
+            new Default_W(),
+            new Default_A(),
+            new PotionBag()
         };
 
         public static Item[] Passive_Inventory = new Item[8]
         {
-            Item.ItemList[0],
-            Item.ItemList[0],
-            Item.ItemList[0],
-            Item.ItemList[0],
-            Item.ItemList[0],
-            Item.ItemList[0],
-            Item.ItemList[0],
-            Item.ItemList[0],
+            new None_Item(),
+            new None_Item(),
+            new None_Item(),
+            new None_Item(),
+            new None_Item(),
+            new None_Item(),
+            new None_Item(),
+            new None_Item(),
         };
         
         static public Status PStatus;      // Переменная статуса игрока
@@ -237,45 +238,60 @@ namespace RPGTestC
                     BHDweller = Convert.ToBoolean(line);
 
                     #region Inventory Loading (Leave for last)
-
-                    int i = 0;
-                    foreach (Item InvIt in Inventory)
+                    
+                    for (int i = 0; i < Inventory.Length + Passive_Inventory.Length; i++)
                     {
                         line = sr.ReadLine();
                         ID = Convert.ToInt16(line);
-                        foreach (Item it in Item.ItemList)
-                            if (ID == it.ID)
-                            {
-                                Inventory[i] = Item.ItemList[ID];
+                        // This is absolutely fucking horrible and disgusting, but I have no other clue on how to implement this. ffs!
+                        /*
+                         * Let me explain why I have to resort to such measures: Even though I could have a list of Items from wich I could pull from in
+                         * the previous version of loading/saving the inventory, that would lead to something unpleasant: if you have Ying and have
+                         * leveled it up, then each new Ying you get will be leveled up as well. See why this is an issue?
+                         * 
+                         * Basically, all I want to do is make unique examples of Items everytime the player gets one. Which is not ideal anyway.
+                         */
+
+                        Item buffer;
+                        if (i >= Inventory.Length) buffer = Passive_Inventory[i-Inventory.Length];
+                        else buffer = Inventory[i];
+                        switch (ID)
+                        {
+                            case 0:
+                                buffer = new None_Item();
                                 break;
-                            }
+                            case 1:
+                                buffer = new Default_A();
+                                break;
+                            case 2:
+                                buffer = new Ying_A();
+                                break;
+                            case 3:
+                                buffer = new Default_W();
+                                break;
+                            case 4:
+                                buffer = new Yang_W();
+                                break;
+                            case 5:
+                                buffer = new PotionBag();
+                                break;
+                            case 6:
+                                buffer = new None_Item();
+                                break;
+                        }
 
                         line = sr.ReadLine();
                         ILVL = Convert.ToInt16(line);
 
-                        InvIt.LVL = ILVL;
-                        i++;
-                    }
-
-                    i = 0;
-                    foreach (Item InvIt in Passive_Inventory)
-                    {
-                        line = sr.ReadLine();
-                        ID = Convert.ToInt16(line);
-                        foreach (Item it in Item.ItemList) if (ID == it.ID) Passive_Inventory[i] = Item.ItemList[ID];
-
-                        line = sr.ReadLine();
-                        ILVL = Convert.ToInt16(line);
-
-                        InvIt.LVL = ILVL;
-                        i++;
+                        buffer.LVL = ILVL;
+                        buffer.Upgrade();
                     }
                     #endregion
                 }
                 catch
                 {
-                    Console.WriteLine("Загружаемый файл, скорее всего, повреждён.");
-                    LoadProgress(false);
+                   Console.WriteLine("Загружаемый файл, скорее всего, повреждён.");
+                   LoadProgress(false);
                 }
 
                 Console.WriteLine("Файл загружен");

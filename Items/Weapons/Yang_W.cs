@@ -12,9 +12,9 @@ namespace RPGTestC.Items.Weapons
         const float Multiplier = 1.5f;
         const float DarkMultiplier = 2f;
 
-        public Yang_W(int id)
+        public Yang_W()
         {
-            ID = id;
+            ID = 4;
             IType = Type.Weapon;
             MaxLVL = 20;
             LVL = 15;

@@ -5,9 +5,9 @@ namespace RPGTestC.Items
 {
     public class PotionBag : Item
     {
-        public PotionBag(int id)
+        public PotionBag()
         {
-            ID = id;
+            ID = 5;
             IType = Type.Item;
             Name = "Сумка с зельями";
             Description = "Сумка с 4-мя видами зелий. Зелье, взятое из сумки - случайное. Будьте осторожны.";
@@ -42,13 +42,13 @@ namespace RPGTestC.Items
                 case 3:
                     int idx = rnd.Next(0, monsters.Length - 1);
                     monsters[idx].HP -= 31 - 16 / (monsters[idx].LVL + 1);
-                    RPG.Dialogue($"Необычно Конкретное Зелье! (Монстру {idx} было нанесено {31 - 16 / (monsters[idx].LVL + 1)})", true, ConsoleColor.Green);
+                    RPG.Dialogue($"Необычно Конкретное Зелье! (Монстру {idx+1} было нанесено {31 - 16 / (monsters[idx].LVL + 1)})", true, ConsoleColor.Green);
                     break;
 
                 // damage the player
                 case 4:
-                    Player.HP -= 82 - 80 / (Player.LVL + 1);
-                    RPG.Dialogue($"Зелье Саботажа! (Вам было нанесено {82 - 80 / (Player.LVL + 1)} урона)", true, ConsoleColor.Red);
+                    Player.HP -= 62 - 60 / (Player.LVL + 1);
+                    RPG.Dialogue($"Зелье Саботажа! (Вам было нанесено {62 - 60 / (Player.LVL + 1)} урона)", true, ConsoleColor.Red);
                     break;
             }
         }

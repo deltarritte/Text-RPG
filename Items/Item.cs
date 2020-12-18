@@ -1,6 +1,7 @@
 ﻿using RPGTestC.Events;
 using RPGTestC.Items.Armour;
 using RPGTestC.Items.Weapons;
+using System;
 
 namespace RPGTestC.Items
 {
@@ -22,6 +23,7 @@ namespace RPGTestC.Items
         public string Prefix;
         public string Name;
         public string Description = "Нет описания";
+        public ConsoleColor Colour = ConsoleColor.Gray;
         
         public float baseDamage = 0;
         public float Defence = 0;
@@ -31,9 +33,17 @@ namespace RPGTestC.Items
 
         public Item() { }
 
-        public Item(int id)
+        public Item(Item item)
         {
-            ID = id;
+            IType = item.IType;
+            LVL = item.LVL;
+            MaxLVL = item.MaxLVL;
+            Prefix = item.Prefix;
+            Name = item.Name;
+            Description = item.Description;
+            baseDamage = item.baseDamage;
+            Defence = item.Defence;
+            Usable = item.Usable;
         }
 
         public string GetName()
@@ -51,15 +61,9 @@ namespace RPGTestC.Items
         // У каждого предмета статы улучшаются индивидуально, поэтому приходится так выкручиваться
         public virtual void Upgrade() { }
 
-        public static Item[] ItemList = new Item[7]
+        public override string ToString()
         {
-            new None_Item(),    // 0 - Ничего
-            new Default_A(1),    // 1 - Стандартная броня
-            new Ying_A(2),       // 2 - Броня Инь
-            new Default_W(3),    // 3 - Стандартное оружие
-            new Yang_W(4),       // 4 - Меч Ян
-            new PotionBag(5),    // 5 - Сумка с Зельями
-            new None_Item(),    // 6 - Зеркало Баланса
-        };
+            return base.ToString();
+        }
     }
 }

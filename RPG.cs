@@ -1,6 +1,8 @@
 using RPGTestC.Achievements;
 using RPGTestC.Events;
 using RPGTestC.Items;
+using RPGTestC.Items.Armour;
+using RPGTestC.Items.Weapons;
 using RPGTestC.Locations;
 using RPGTestC.Quests;
 using RPGTestC.UI;
@@ -81,7 +83,6 @@ namespace RPGTestC
 
         static public void Main()
         {
-
             Console.WriteLine("Выберите название для файла сохранения (Образец: saveFile)");
             savename = Console.ReadLine();
             SaveProgress(false);
@@ -243,8 +244,22 @@ namespace RPGTestC
                     break;
 
                 case "bring balance":
-                    Passive_Inventory[0] = Item.ItemList[4];
-                    Passive_Inventory[1] = Item.ItemList[2];
+                    for (int i = 0; i < Passive_Inventory.Length; i++)
+                    {
+                        if (Passive_Inventory[i].ID == 0)
+                        {
+                            Passive_Inventory[i] = new Yang_W();
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < Passive_Inventory.Length; i++)
+                    {
+                        if (Passive_Inventory[i].ID == 0)
+                        {
+                            Passive_Inventory[1] = new Ying_A();
+                            break;
+                        }
+                    }
                     break;
 
                 case "scrooge":

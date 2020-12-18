@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Items\Armour\Ying_A.cs" />
     <Compile Include="Items\PotionBag.cs" />
+    <Compile Include="Items\Quest\GuardHead.cs" />
     <Compile Include="Items\Weapons\Yang_W.cs" />
     <Compile Include="UI\AchievementMenu.cs" />
     <Compile Include="Achievements\Achievement.cs" />

@@ -12,9 +12,9 @@ namespace RPGTestC.Items.Armour
     {
         const float Absorb = 0.3f;
 
-        public Ying_A(int id)
+        public Ying_A()
         {
-            ID = id;
+            ID = 2;
             IType = Type.Armour;
             MaxLVL = 20;
             LVL = 15;

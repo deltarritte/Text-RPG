@@ -26,8 +26,9 @@ namespace RPGTestC.UI
 
             for(int i = 0; i < Player.Passive_Inventory.Length; i++)
             {
-                if (i == index) Console.WriteLine($"[{Player.Passive_Inventory[i].GetName()}] - {Player.Passive_Inventory[i].Description}");
-                else Console.WriteLine($" {Player.Passive_Inventory[i].GetName()} ");
+                if (i == index) RPG.Dialogue($"[{Player.Passive_Inventory[i].GetName()}] - {Player.Passive_Inventory[i].Description} (УР: {Player.Passive_Inventory[i].LVL})", 
+                                            true, Player.Passive_Inventory[i].Colour);
+                else RPG.Dialogue($" {Player.Passive_Inventory[i].GetName()} ", true, Player.Passive_Inventory[i].Colour);
             }
 
             Console.WriteLine("W,S - Выбрать предмет, E - Экипировать предмет, Q - Выйти");

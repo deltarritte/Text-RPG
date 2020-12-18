@@ -1,4 +1,5 @@
 ﻿using RPGTestC.Items;
+using RPGTestC.Items.Weapons;
 using System;
 using static RPGTestC.Player;
 
@@ -217,6 +218,7 @@ namespace RPGTestC.Events
                 if (LVL == 15) RPG.Dialogue("Полученный опыт был превращён в " + (int)Math.Round((XP - MaxXP) / 10) + " очков мастерства", false, ConsoleColor.Yellow);
                 Reset();
                 LvlUp();
+                Player.SaveProgress(true);
             }
         }
 
@@ -288,7 +290,7 @@ namespace RPGTestC.Events
                     }
                     else RPG.Dialogue($"{monsters[i].Name} {i + 1} не нанёс  урона.", true, ConsoleColor.Red);
 
-                    if (monsters[i].Type == Monster.MType.Luminous || Inventory[1] == Item.ItemList[2]) monsters[i].ResetDamage();
+                    if (monsters[i].Type == Monster.MType.Luminous || Inventory[1].GetType().Equals(new Yang_W())) monsters[i].ResetDamage();
 
                     else if (monsters[i].Type == Monster.MType.Thorned) defenceMultiplier = 1f;
 
@@ -557,7 +559,7 @@ namespace RPGTestC.Events
                         monster.effectCooldown = 5;
                         strikeChance = 1f / 3;
                         PStatus = Status.Blind;
-                        RPG.Dialogue($"Шанс попасть по монстру стал 33%");
+                        RPG.Dialogue($"Монстр скрылся в тенях. Шанс попасть по монстру стал 33%");
                     }
                     break;
 
