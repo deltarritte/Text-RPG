@@ -12,21 +12,11 @@ using System.IO;
 using System.Text;
 using static RPGTestC.Player;
 
-/*/
- * Made by deltarritte
- * for no reason whatsoever
- * 
- * plz do knot steel
- * i wowked weally hawd on whis uwu
- * 
- * Ah, crap, now I have a taste of shit in my mouth
- * Well, doing mistakes is my job anyway, so I have no room to complain.
-/*/
-
 namespace RPGTestC
 {
     public class RPG
     {
+        public static string VERSION = "05";
         #region Variables
         static public Random rnd = new Random();
         
@@ -80,19 +70,18 @@ namespace RPGTestC
             Spaces = new string (b, 20 - Perc);
             XPLine += Spaces;
         }
-
         static public void Main()
         {
-            Console.WriteLine("Выберите название для файла сохранения (Образец: saveFile)");
-            savename = Console.ReadLine();
-            SaveProgress(false);
-
             Console.Title = "RPG C# Ver. 0.5";
+
+            if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
+            subDirs = Directory.GetFiles("Saves", "*.RPGSF" + VERSION);
+            SaveFileHandler(true);
+
             Dialogue("Ну привет, искатель приключений.");
 
             GetRandomEvent();
         }
-
         static public void GetRandomEvent()
         {
             Fancies();
@@ -196,7 +185,6 @@ namespace RPGTestC
 
                 case "l":
                     LoadProgress(false);
-                    Console.Clear();
                     break;
 
                 case "s":
@@ -309,7 +297,6 @@ namespace RPGTestC
 
             GetRandomEvent();
         }
-
         static public void Dialogue(object text, bool skip = false, ConsoleColor color = ConsoleColor.Gray)
         {
             Console.ForegroundColor = color;
@@ -320,7 +307,6 @@ namespace RPGTestC
                 Console.ReadKey();
             }
         }
-
         static public void Dialogue(string name, string text, bool skip = false, ConsoleColor color = ConsoleColor.Gray)
         {
             Console.ForegroundColor = color;

@@ -38,7 +38,7 @@ namespace RPGTestC.UI
 
         static void MenuControls()
         {
-            Item buffer = new Item();
+            Item buffer;
 
             ConsoleKey key = Console.ReadKey().Key;
 

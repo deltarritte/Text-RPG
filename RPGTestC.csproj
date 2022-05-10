@@ -66,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Locations\Tower.cs" />
     <Compile Include="UI\InventoryMenu.cs" />
+    <Compile Include="UI\SaveFileMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
