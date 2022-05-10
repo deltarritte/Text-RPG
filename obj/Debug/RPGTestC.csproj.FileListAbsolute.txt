@@ -4,4 +4,4 @@ C:\Users\Саша\source\repos\gitrepo\bin\Debug\RPGTestC.exe
 C:\Users\Саша\source\repos\gitrepo\bin\Debug\RPGTestC.pdb
 C:\Users\Саша\source\repos\gitrepo\obj\Debug\RPGTestC.exe
 C:\Users\Саша\source\repos\gitrepo\obj\Debug\RPGTestC.pdb
-C:\Users\Саша\source\repos\gitrepo\obj\Debug\RPGTestC.csprojAssemblyReference.cache
+C:\Users\Саша\source\repos\gitrepo\obj\Debug\RPGTestC.csproj.AssemblyReference.cache
