@@ -2,6 +2,7 @@
 using RPGTestC.Items.Armour;
 using RPGTestC.Items.Weapons;
 using RPGTestC.Locations;
+using RPGTestC.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,7 @@ namespace RPGTestC
 {
     public class Player
     {
+        #region Variables
         public enum Status                      // Тип перечисления статусов игрока
         {
             None,
@@ -66,10 +68,21 @@ namespace RPGTestC
         static public bool BHDweller = false;   // Выпил ли игрок чёрную дыру
 
         static public string savename;
-
+        public static string[] subDirs;
+        #endregion
         static public float GetMaxXP() => 25 * (float)Math.Round(Math.Pow(1.5, LVL), 1);
         static public float GetMaxHP() => 50 + (float)Math.Pow(2, LVL);
-
+        static public void SaveFileHandler(bool isSaving)
+        {
+            SaveFileMenu.ShowMenu();
+            /*
+            Console.Clear();
+            Console.WriteLine("Выберите название для файла сохранения (Образец: saveFile)");
+            foreach (string subDir in subDirs) Console.WriteLine(subDir);
+            savename = "Saves\\" + Console.ReadLine() + ".RPGSF" + RPG.VERSION;
+            if (isSaving) SaveProgress(false);
+            */
+        }
         static public void SaveProgress(bool currentSave)
         {
             List<object> saveList = new List<object>
@@ -119,9 +132,7 @@ namespace RPGTestC
 
                         case ConsoleKey.D2:
                         case ConsoleKey.NumPad2:
-                            Console.WriteLine("Введите другое название файла сохранения (Образец: C:\\saveFile.txt)");
-                            savename = Console.ReadLine();
-                            SaveProgress(false);
+                            SaveFileHandler(true);
                             break;
 
                         case ConsoleKey.D3:
@@ -159,7 +170,6 @@ namespace RPGTestC
                 }
             }
         }
-        
         static public void LoadProgress(bool currentSave)
         {
             int ID;
@@ -167,8 +177,7 @@ namespace RPGTestC
 
             if (!currentSave)
             {
-                Console.WriteLine("Введите название загружаемого файла (Образец: C:\\saveFile.txt)");
-                savename = Console.ReadLine();
+                SaveFileHandler(false);
 
                 if (!File.Exists(savename))
                 {
