@@ -72,8 +72,9 @@ namespace RPGTestC
         #endregion
         static public float GetMaxXP() => 25 * (float)Math.Round(Math.Pow(1.5, LVL), 1);
         static public float GetMaxHP() => 50 + (float)Math.Pow(2, LVL);
-        static public void SaveFileHandler(bool isSaving)
+        static public void SaveFileHandler()
         {
+            subDirs = Directory.GetFiles("Saves");
             SaveFileMenu.ShowMenu();
             /*
             Console.Clear();
@@ -132,7 +133,7 @@ namespace RPGTestC
 
                         case ConsoleKey.D2:
                         case ConsoleKey.NumPad2:
-                            SaveFileHandler(true);
+                            SaveFileHandler();
                             break;
 
                         case ConsoleKey.D3:
@@ -164,9 +165,7 @@ namespace RPGTestC
                 catch
                 {
                     Console.WriteLine("Некорректный ввод");
-                    Console.WriteLine("Выберите название для файла сохранения (Образец: C:saveFile.txt)");
-                    savename = Console.ReadLine();
-                    SaveProgress(false);
+                    SaveFileMenu.ShowMenu();
                 }
             }
         }
@@ -177,15 +176,14 @@ namespace RPGTestC
 
             if (!currentSave)
             {
-                SaveFileHandler(false);
+                SaveFileMenu.isLoading = true;
+                SaveFileHandler();
 
                 if (!File.Exists(savename))
                 {
                     Console.WriteLine("Данный файл не существует. Попробуйте ещё раз.");
                     LoadProgress(false);
                 }
-                else
-                    LoadProgress(true);
             }
 
             using (StreamReader sr = new StreamReader(savename))
@@ -247,7 +245,7 @@ namespace RPGTestC
                     BHDweller = Convert.ToBoolean(line);
 
                     #region Inventory Loading (Leave for last)
-                    
+
                     for (int i = 0; i < Inventory.Length + Passive_Inventory.Length; i++)
                     {
                         line = sr.ReadLine();
@@ -262,8 +260,6 @@ namespace RPGTestC
                          */
 
                         Item buffer;
-                        if (i >= Inventory.Length) buffer = Passive_Inventory[i-Inventory.Length];
-                        else buffer = Inventory[i];
                         switch (ID)
                         {
                             case 0:
@@ -284,7 +280,7 @@ namespace RPGTestC
                             case 5:
                                 buffer = new PotionBag();
                                 break;
-                            case 6:
+                            default:
                                 buffer = new None_Item();
                                 break;
                         }
@@ -294,6 +290,9 @@ namespace RPGTestC
 
                         buffer.LVL = ILVL;
                         buffer.Upgrade();
+
+                        if (i >= Inventory.Length) Passive_Inventory[i - Inventory.Length] = buffer;
+                        else Inventory[i] = buffer;
                     }
                     #endregion
                 }
@@ -306,7 +305,6 @@ namespace RPGTestC
                 Console.WriteLine("Файл загружен");
             }
         }
-
         static public void LvlUp(bool cheat = false)
         {
             while ((XP >= MaxXP || cheat) && LVL <= 14)

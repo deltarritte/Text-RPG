@@ -4,6 +4,7 @@ namespace RPGTestC.UI
 {
     public class SaveFileMenu
     {
+        public static bool isLoading = false;
         static int index = 0;
         static readonly string newfile = "Создать новый файл";
         public static void ShowMenu()
@@ -33,8 +34,20 @@ namespace RPGTestC.UI
                 case ConsoleKey.E:
                     if(index == 0)
                     {
-                        Player.savename = Console.ReadLine();
+                        Console.Clear();
+                        Console.WriteLine("Выберите название для файла сохранения (Образец: saveFile)");
+                        Player.savename = "Saves\\" + Console.ReadLine() + ".RPGSF" + RPG.VERSION;
                         Player.SaveProgress(false);
+                    }
+                    else
+                    {
+                        Player.savename = Player.subDirs[index - 1];
+                        if (isLoading)
+                        {
+                            Player.LoadProgress(true);
+                            isLoading = false;
+                        }
+                        else Player.SaveProgress(true);
                     }
                     goto case ConsoleKey.Q;
 

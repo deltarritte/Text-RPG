@@ -9,6 +9,7 @@ namespace RPGTestC.Events
     {
         #region Variables
         static bool boss;
+        //static bool retrig = false;
         static int amount;
         static int count;                       // Счётчик ходов
         static public int effectCount;                 // Счётчик действия эффекта (в ходах)
@@ -18,6 +19,37 @@ namespace RPGTestC.Events
         static int Crit;                        // Шанс критического урона
         static float RewardXP;
         static int RewardMoney;
+        static int ActionPoints = 100;
+        static int ChainCost = 0;
+        static RPG.ChainAction[] ActionChain;
+        static int index = 0;
+
+        static RPG.ChainAction Wait = new RPG.ChainAction();
+        static RPG.ChainAction Attack = new RPG.ChainAction();
+        static RPG.ChainAction Defend = new RPG.ChainAction();
+        static RPG.ChainAction Spellcast = new RPG.ChainAction();
+        static void SetupActions()
+        {
+            Wait.name = 'W';
+            Wait.cost = 0;
+            Wait.weight = 0;
+            Wait.num = 0;
+
+            Attack.name = 'A';
+            Attack.cost = 25;
+            //Attack.weight = 0.5f;
+            Attack.num = 1;
+
+            Spellcast.name = 'S';
+            Spellcast.cost = 30;
+            //Spellcast.weight = 0.4f;
+            Spellcast.num = 2;
+
+            Defend.name = 'D';
+            Defend.cost = 20;
+            //Defend.weight = 0.1f;
+            Defend.num = 3;
+        }
 
         static Monster[] monsters;
         #endregion
@@ -27,6 +59,8 @@ namespace RPGTestC.Events
             //Defence = GetDefence();
             //Damage = GetDamage();
             PStatus = Status.None;
+            SetupActions();
+            ActionChain = new RPG.ChainAction[5] { Wait, Wait, Wait, Wait, Wait };
         }
 
         // Инициализация схватки
@@ -72,7 +106,6 @@ namespace RPGTestC.Events
                 
             MonsterFight();                                     // Начать цикл схватки
         }
-
         static public void Init(Monster[] _monsters, bool _boss = false)
         {
             Reset();
@@ -99,98 +132,9 @@ namespace RPGTestC.Events
             }
             MonsterFight();
         }
-
         static void MonsterFight()
         {
-            RPG.Fancies();                                              // Обновление элементов интерфейса
-            Console.Clear();
-            Console.WriteLine($"Ход {count}. Характеристики:");
-
-            if(effectCount == 0)
-            {
-                foreach (Monster mnstr in monsters) if (mnstr.effectCooldown != 0) mnstr.effectCooldown--;
-
-                if (PStatus == Status.Frozen) Inventory[0].Damage = Inventory[0].baseDamage;
-                else if (PStatus == Status.Blind) strikeChance = 0.95f;
-
-                PStatus = Status.None;
-            }
-
-            for (int i = 0; i < amount; i++)
-            {
-                Console.WriteLine($"\n    {monsters[i].Name} {i + 1} (УР: {monsters[i].LVL}):"
-                                + $"\n HP {monsters[i].HP}"
-                                + $"\nATK {monsters[i].Damage}");     // Вывести "интерфейс"
-            }
-            Console.WriteLine($"\nЗдоровье игрока: [{RPG.HPLine}] {HP}/{MaxHP} ({Inventory[1].Defence} ЗАЩ). Статус: {GetStatusName()}");
-
-            if (Remaining() != 0)                                            // Продолжение битвы
-            {
-                Console.WriteLine($"Что будешь делать? \nАтака - 1 ({Inventory[0].baseDamage} АТК, {strikeChance * 100}% успех),"
-                                + $"\nЛечение - 2 (Зарядов: {healCount})" +
-                                $"\nИспользовать предмет ({Inventory[2].GetName()}) - 9"
-                                + "\nПодсказка по типу - 3");                         // Вывести список возможных действий
-
-                switch (Console.ReadLine())
-                {
-                    case "1":
-
-                        int i = 0;
-                        string A;
-
-                        if (Remaining() > 1)
-                        {
-                            Console.WriteLine("Кому нанести удар?");
-                            for (int j = 0; j < amount; j++) Console.WriteLine($"{j + 1} - {GetTypeName(monsters[j].Type)} {monsters[j].Name}");
-                            A = Console.ReadLine();
-
-                            if (!Int32.TryParse(A, out i)) goto default;
-                            if (i < 1 || i > amount) goto default;
-
-                            i -= 1;
-                        }
-
-                        else if (Remaining() == 1) for (int j = 0; j < amount; j++) if (monsters[j].HP > 0) i = j;
-
-                        PlayerAttack(i);
-
-                        MonsterAttack();
-                        break;
-
-                    case "2":
-
-                        if (HP < MaxHP)
-                        {
-                            if (healCount > 0)
-                            {
-                                HP = MaxHP;
-                                healCount--;
-                            }
-                            else RPG.Dialogue("Нет зарядов.");
-                        }
-                        else RPG.Dialogue("Здоровье полное");
-                        break;
-
-                    case "3":
-                        foreach (Monster mnstr in monsters) RPG.Dialogue("\n" + GetTypeTip(mnstr));
-                        break;
-
-                    case "9":
-                        if (Inventory[2].Usable)
-                        {
-                            Inventory[2].OnUse(monsters);
-
-                            MonsterAttack();
-                        }
-                        break;
-
-                    default:
-                        RPG.Dialogue("Некорректный ввод.");
-                        break;
-                }
-                MonsterFight();
-            }
-            else // Победа. Получение награды
+            if(Remaining() == 0)
             {
                 if (amount == 1 && monsters[0].Type == Monster.MType.Explosive && count == 4)
                 {
@@ -216,117 +160,265 @@ namespace RPGTestC.Events
                 Money += RewardMoney;
 
                 if (LVL == 15) RPG.Dialogue("Полученный опыт был превращён в " + (int)Math.Round((XP - MaxXP) / 10) + " очков мастерства", false, ConsoleColor.Yellow);
-                Reset();
                 LvlUp();
-                Player.SaveProgress(true);
+                SaveProgress(true);
+                Console.ReadKey();
+            }
+            else
+            {
+                // Снятие дебаффов с игрока
+                foreach (Monster mnstr in monsters) if (mnstr.effectCooldown != 0) mnstr.effectCooldown--;
+
+                if (effectCount == 0)
+                {
+                    if (PStatus == Status.Frozen) Inventory[0].Damage = Inventory[0].baseDamage;
+                    else if (PStatus == Status.Blind) strikeChance = 0.95f;
+
+                    PStatus = Status.None;
+                }
+
+                for (int i = 0; i < amount; i++) monsters[i].AI();
+
+                Console.WriteLine("Going to a player's turn");
+                Console.ReadKey();
+                PlayerTurn();
             }
         }
-
-        static void PlayerAttack(int index = 0)
+        static void PlayerTurn()
         {
-            Crit = RPG.rnd.Next(1, 10);
-            double atksuc = RPG.rnd.NextDouble();
-
-            if (!monsters[index].isInvincible && atksuc <= strikeChance)
-            {
-                Inventory[0].OnUse(monsters, index);
-                if (Crit >= 8)
-                {
-                    monsters[index].HP -= Inventory[0].Damage * critCoeff * strikeMultiplier;
-                    RPG.Dialogue($"Критический урон! Вы нанесли {Inventory[0].Damage * critCoeff * strikeMultiplier} урона.", true, ConsoleColor.Yellow);
-                }
-                else
-                {
-                    monsters[index].HP -= Inventory[0].Damage * strikeMultiplier;
-                    RPG.Dialogue($"Вы нанесли {Inventory[0].Damage * strikeMultiplier} урона.", true, ConsoleColor.Green);
-                }
-
-                if (monsters[index].HP < 0) monsters[index].HP = 0;
-                Console.WriteLine("У монстра осталось " + monsters[index].HP + " HP");
-            }
-            else Console.WriteLine("Монстр не получил урона!");
-        }
-
-        static void MonsterAttack()
-        {
-            #region Apply Effect
-            if (effectCount != 0)
-            {
-                effectCount--;
-                switch (PStatus)
-                {
-                    case Status.Poisoned:
-                        HP -= 2 * (LVL + 1);
-                        RPG.Dialogue($"Было снято {2 * (LVL + 1)} ХП от яда.", true, ConsoleColor.DarkGreen);
-                        break;
-
-                    case Status.OnFire:
-                        HP -= 3 * (LVL + 1);
-                        RPG.Dialogue($"Было снято {3 * (LVL + 1)} ХП от огня.", true, ConsoleColor.DarkRed);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            #endregion
-
+            Console.Clear();
+            RPG.Fancies();                                              // Обновление элементов интерфейса
+            Console.WriteLine($"Ход {count}. Характеристики:");
             for (int i = 0; i < amount; i++)
             {
-                if (monsters[i].HP > 0)
+                Console.WriteLine($"\n    {monsters[i].Name} {i + 1} (УР: {monsters[i].LVL}, {monsters[i].GetAState()}):"
+                                + $"\n HP {monsters[i].HP}"
+                                + $"\nATK {monsters[i].Damage}"
+                                + $"\nЦепь: {monsters[i].GetActionChain()}");     // Вывести "интерфейс"
+            }
+
+            Console.WriteLine($"\nЗдоровье игрока: [{RPG.HPLine}] {HP}/{MaxHP} ({Inventory[1].Defence} ЗАЩ). Статус: {GetStatusName()}");
+            // Вывод списка возможных действий
+            Console.Write($"\nТекущая цепь: -");
+
+            for (int i = 0; i < ActionChain.Length; i++)
+            {
+                if(i == index) Console.Write($"[{ActionChain[i].name}]-");
+                else Console.Write($"{ActionChain[i].name}-");
+            }
+
+            Console.WriteLine($"\nОчки действий: {ChainCost}/{ActionPoints}"
+                            + $"\nАтаковать ({Attack.cost}): A"
+                            + $"\nИсп. предмет ({Spellcast.cost}): S"
+                            + $"\nЗащититься ({Defend.cost}): D"
+                            + $"\nИспользовать текущую цепь: 1"
+                            + $"\nСменить звено: 2, 3"
+                            + $"\nОчистить цепь: 4");
+
+            // Приём ввода
+            switch (Console.ReadKey().Key)
+            {
+                case ConsoleKey.NumPad1:
+                case ConsoleKey.D1:
+                    ChainClash();
+                    goto default;
+                case ConsoleKey.NumPad2:
+                case ConsoleKey.D2:
+                    if (index > 0) index--;
+                    goto default;
+                case ConsoleKey.NumPad3:
+                case ConsoleKey.D3:
+                    if (index < ActionChain.Length - 1) index++;
+                    goto default;
+                case ConsoleKey.NumPad4:
+                case ConsoleKey.D4:
+                    index = 0;
+                    ChainCost = 0;
+                    ActionChain = new RPG.ChainAction[5] { Wait, Wait, Wait, Wait, Wait };
+                    goto default;
+
+                case ConsoleKey.W:
+                    ChainCost -= ActionChain[index].cost;
+                    ActionChain[index] = Wait;
+                    ChainCost += ActionChain[index].cost;
+                    if (index < ActionChain.Length - 1) index++;
+                    goto default;
+                case ConsoleKey.A:
+                    if (ChainCost - ActionChain[index].cost + Attack.cost <= ActionPoints)
+                    {
+                        ChainCost -= ActionChain[index].cost;
+                        ActionChain[index] = Attack;
+                        ChainCost += ActionChain[index].cost;
+                        if (index < ActionChain.Length - 1) index++;
+                    }
+                    goto default;
+                case ConsoleKey.S:
+                    if (ChainCost - ActionChain[index].cost + Spellcast.cost <= ActionPoints)
+                    {
+                        ChainCost -= ActionChain[index].cost;
+                        ActionChain[index] = Spellcast;
+                        ChainCost += ActionChain[index].cost;
+                        if (index < ActionChain.Length - 1) index++;
+                    }
+                    goto default;
+                case ConsoleKey.D:
+                    if (ChainCost - ActionChain[index].cost + Defend.cost <= ActionPoints)
+                    {
+                        ChainCost -= ActionChain[index].cost;
+                        ActionChain[index] = Defend;
+                        ChainCost += ActionChain[index].cost;
+                        if (index < ActionChain.Length - 1) index++;
+                    }
+                    goto default;
+
+                default:
+                    PlayerTurn();
+                    break;
+            }
+        }
+        static void ChainClash()
+        {
+            bool defending = false;
+            bool success = false;
+            for (int i = 0; i < monsters.Length; i++)
+            {
+                for (int j = 0; j < ActionChain.Length; j++)
                 {
-                    if (monsters[i].effectCooldown == 0) GetTypeEffect(monsters[i]);
-
-                    #region Attack
-
-                    Inventory[1].OnUse(monsters, i);
-
-                    GetTypeSpecAtk(monsters[i]);
-
-                    if (monsters[i].Damage - Inventory[1].Defence * defenceMultiplier > 0)
+                    // 0 - W, 1 - A, 2 - S, 3 - D
+                    switch (ActionChain[j].num)
                     {
-                        HP -= monsters[i].Damage - Inventory[1].Defence * defenceMultiplier;
-                        RPG.Dialogue($"{monsters[i].Name} {i + 1} нанёс {monsters[i].Damage} ед. урона ({Inventory[1].Defence * defenceMultiplier} ед. урона заблокировано)", true, ConsoleColor.Red);
+                        case 1:
+                            Crit = RPG.rnd.Next(1, 10);
+                            double atksuc = RPG.rnd.NextDouble();
+
+                            if (monsters[i].ActionChain[j].num == 3) atksuc -= 0.1f;
+
+                            if (!monsters[0].isInvincible && atksuc <= strikeChance)
+                            {
+                                success = true;
+                                Inventory[0].OnUse(monsters, 0);
+                                if (Crit >= 8)
+                                {
+                                    monsters[0].HP -= Inventory[0].Damage * critCoeff * strikeMultiplier;
+                                    RPG.Dialogue($"Критический урон! Вы нанесли {Inventory[0].Damage * critCoeff * strikeMultiplier} урона.", true, ConsoleColor.Yellow);
+                                }
+                                else
+                                {
+                                    monsters[0].HP -= Inventory[0].Damage * strikeMultiplier;
+                                    RPG.Dialogue($"Вы нанесли {Inventory[0].Damage * strikeMultiplier} урона.", true, ConsoleColor.Green);
+                                }
+
+                                if (monsters[0].HP < 0) monsters[0].HP = 0;
+                                Console.WriteLine("У монстра осталось " + monsters[0].HP + " HP");
+                            }
+                            else Console.WriteLine("Монстр не получил урона!");
+
+                            break;
+
+                        case 2:
+                            Inventory[2].OnUse(monsters);
+                            break;
+
+                        case 3:
+                            defenceMultiplier += 0.25f;
+                            defending = true;
+                            break;
+
+                        default:
+                            break;
                     }
-                    else RPG.Dialogue($"{monsters[i].Name} {i + 1} не нанёс  урона.", true, ConsoleColor.Red);
-
-                    if (monsters[i].Type == Monster.MType.Luminous || Inventory[1].GetType().Equals(new Yang_W())) monsters[i].ResetDamage();
-
-                    else if (monsters[i].Type == Monster.MType.Thorned) defenceMultiplier = 1f;
-
-                    else if (monsters[i].Type == Monster.MType.Ice && monsters[i].isInvincible)
+                    switch (monsters[i].ActionChain[j].num)
                     {
-                        monsters[i].isInvincible = false;
-                        monsters[i].ResetDamage();
-                    }
-                    #endregion
+                        case 1:
+                            if (monsters[i].HP > 0)
+                            {
+                                Inventory[1].OnUse(monsters, i);
 
-                    if (HP <= 0)
+                                if (monsters[i].Damage - Inventory[1].Defence * defenceMultiplier > 0)
+                                {
+                                    HP -= monsters[i].Damage - Inventory[1].Defence * defenceMultiplier;
+                                    RPG.Dialogue($"{monsters[i].Name} {i + 1} нанёс {monsters[i].Damage} ед. урона ({Inventory[1].Defence * defenceMultiplier} ед. урона заблокировано)", true, ConsoleColor.Red);
+                                }
+                                else RPG.Dialogue($"{monsters[i].Name} {i + 1} не нанёс  урона.", true, ConsoleColor.Red);
+
+                                if (HP <= 0)
+                                {
+                                    PStatus = Status.None;
+
+                                    Console.WriteLine("Вы умерли." +
+                                        "\nЗагрузить файл сохранения? 1 - Да; Любая клавиша - Выход");
+
+                                    var C = Console.ReadLine();
+
+                                    switch (C)
+                                    {
+                                        case "1":
+                                            LoadProgress(false);
+                                            RPG.GetRandomEvent();
+                                            break;
+
+                                        default:
+                                            Environment.Exit(0);
+                                            break;
+                                    }
+                                }
+                            }
+                            break;
+
+                        case 2:
+                            GetTypeEffect(monsters[i]);
+                            GetTypeSpecAtk(monsters[i]);
+                            break;
+
+                        case 3:
+                            if (!success) RPG.Dialogue($"Противник увернулся от атаки.", true);
+                            else RPG.Dialogue($"Противник попытался увернуться от атаки.", true);
+                            break;
+                        default:
+                            break;
+                    } // Switch
+                } // for ActionChain
+
+                if (effectCount != 0)
+                {
+                    effectCount--;
+                    switch (PStatus)
                     {
-                        PStatus = Status.None;
+                        case Status.Poisoned:
+                            HP -= 2 * (LVL + 1);
+                            RPG.Dialogue($"Было снято {2 * (LVL + 1)} ХП от яда.", true, ConsoleColor.DarkGreen);
+                            break;
 
-                        Console.WriteLine("Вы умерли." +
-                            "\nЗагрузить файл сохранения? 1 - Да; Любая клавиша - Выход");
+                        case Status.OnFire:
+                            HP -= 3 * (LVL + 1);
+                            RPG.Dialogue($"Было снято {3 * (LVL + 1)} ХП от огня.", true, ConsoleColor.DarkRed);
+                            break;
 
-                        var C = Console.ReadLine();
-
-                        switch (C)
-                        {
-                            case "1":
-                                LoadProgress(false);
-                                RPG.GetRandomEvent();
-                                break;
-
-                            default:
-                                Environment.Exit(0);
-                                break;
-                        }
+                        default:
+                            break;
                     }
                 }
-            }
+
+                if (monsters[i].Type == Monster.MType.Luminous || Inventory[1].GetType().Equals(new Yang_W())) monsters[i].ResetDamage();
+
+                else if (monsters[i].Type == Monster.MType.Thorned) defenceMultiplier = 1f;
+
+                else if (monsters[i].Type == Monster.MType.Ice && monsters[i].isInvincible)
+                {
+                    monsters[i].isInvincible = false;
+                    monsters[i].ResetDamage();
+                }
+
+                if (defending)
+                {
+                    defenceMultiplier = 1f;
+                    defending = false;
+                }
+            } // for monsters
             count++;
             Console.ReadKey();
-        }
+            MonsterFight();
+        } // ChainClash
         
         #region Functions
         private static void GetTypeSpecAtk(Monster monster)    // Получить специальную атаку типа монстра
@@ -370,6 +462,8 @@ namespace RPGTestC.Events
 
                         RPG.Dialogue("Монстр использовал линзу!", true, ConsoleColor.White);
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -471,7 +565,7 @@ namespace RPGTestC.Events
             switch (monster.Type)
             {
                 case Monster.MType.Poisonous:
-                    if(a <= 1f / 4)
+                    if (a <= 1f / 4)
                     {
                         switch (PStatus)
                         {
@@ -491,10 +585,11 @@ namespace RPGTestC.Events
                                 break;
                         }
                     }
+                    else RPG.Dialogue("Монстр попытался вас отравить.", true, ConsoleColor.DarkGreen);
                     break;
                     
                 case Monster.MType.Fire:
-                    if(a <= 1f / 3)
+                    if (a <= 1f / 3)
                     {
                         switch (PStatus)
                         {
@@ -520,6 +615,7 @@ namespace RPGTestC.Events
                                 break;
                         }
                     }
+                    else RPG.Dialogue($"Монстр попытался вас поджечь.", true, ConsoleColor.DarkRed);
                     break;
 
                 case Monster.MType.Ice:
@@ -550,6 +646,7 @@ namespace RPGTestC.Events
                                 break;
                         }
                     }
+                    else RPG.Dialogue($"Монстр попытался вас заморозить.", true, ConsoleColor.Cyan);
                     break;
 
                 case Monster.MType.Dark:

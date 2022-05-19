@@ -12,12 +12,20 @@ using System.IO;
 using System.Text;
 using static RPGTestC.Player;
 
+/*/
+ * Made by deltarritte
+ * for no reason whatsoever
+ * 
+ * plz do knot steel
+/*/
+
 namespace RPGTestC
 {
     public class RPG
     {
-        public static string VERSION = "05";
         #region Variables
+        public static string VERSION = "05";
+
         static public Random rnd = new Random();
         
         static int Money;
@@ -25,6 +33,14 @@ namespace RPGTestC
         static public string HPLine;
         static string Spaces;
         static int Perc;
+
+        public struct ChainAction
+        {
+            public int num;
+            public char name;
+            public int cost;
+            public float weight;
+        }
         #endregion
 
         static public void Fancies()
@@ -70,18 +86,21 @@ namespace RPGTestC
             Spaces = new string (b, 20 - Perc);
             XPLine += Spaces;
         }
+
         static public void Main()
         {
-            Console.Title = "RPG C# Ver. 0.5";
+            Console.Title = "RPG C# Ver."+VERSION;
 
             if (!Directory.Exists("Saves")) Directory.CreateDirectory("Saves");
-            subDirs = Directory.GetFiles("Saves", "*.RPGSF" + VERSION);
-            SaveFileHandler(true);
+            SaveFileMenu.isLoading = true;
+            SaveFileHandler();
+            Console.Clear();
 
-            Dialogue("Ну привет, искатель приключений.");
+            Dialogue("Ну привет, искатель приключений.",true);
 
             GetRandomEvent();
         }
+
         static public void GetRandomEvent()
         {
             Fancies();
@@ -185,6 +204,7 @@ namespace RPGTestC
 
                 case "l":
                     LoadProgress(false);
+                    Console.Clear();
                     break;
 
                 case "s":
@@ -297,6 +317,7 @@ namespace RPGTestC
 
             GetRandomEvent();
         }
+
         static public void Dialogue(object text, bool skip = false, ConsoleColor color = ConsoleColor.Gray)
         {
             Console.ForegroundColor = color;
@@ -307,6 +328,7 @@ namespace RPGTestC
                 Console.ReadKey();
             }
         }
+
         static public void Dialogue(string name, string text, bool skip = false, ConsoleColor color = ConsoleColor.Gray)
         {
             Console.ForegroundColor = color;
