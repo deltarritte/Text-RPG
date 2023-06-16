@@ -14,8 +14,8 @@ namespace RPGTestC.Items.Weapons
 
         public Yang_W()
         {
-            ID = 4;
-            IType = Type.Weapon;
+            ID = 0x000200;
+            ItemType = Type.Weapon;
             MaxLVL = 20;
             LVL = 15;
             Name = "Меч Ян";

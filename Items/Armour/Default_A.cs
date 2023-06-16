@@ -6,8 +6,8 @@ namespace RPGTestC.Items.Armour
     {
         public Default_A()
         {
-            ID = 1;
-            IType = Type.Armour;
+            ID = 0x000001;
+            ItemType = Type.Armour;
             MaxLVL = 3;
             Prefix = "Default";
             Name = "Armour";

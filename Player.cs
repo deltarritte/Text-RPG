@@ -37,6 +37,42 @@ namespace RPGTestC
             new Default_A(),
             new PotionBag()
         };
+        public static Item Weapon
+        {
+            get
+            {
+                return Inventory[0];
+            }
+
+            set
+            {
+                Inventory[0] = value;
+            }
+        }
+        public static Item Armour
+        {
+            get
+            {
+                return Inventory[1];
+            }
+
+            set
+            {
+                Inventory[1] = value;
+            }
+        }
+        public static Item Special
+        {
+            get
+            {
+                return Inventory[2];
+            }
+
+            set
+            {
+                Inventory[2] = value;
+            }
+        }
 
         public static Item[] Passive_Inventory = new Item[8]
         {

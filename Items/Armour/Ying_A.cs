@@ -14,8 +14,8 @@ namespace RPGTestC.Items.Armour
 
         public Ying_A()
         {
-            ID = 2;
-            IType = Type.Armour;
+            ID = 0x000002;
+            ItemType = Type.Armour;
             MaxLVL = 20;
             LVL = 15;
             Name = "Броня Инь";

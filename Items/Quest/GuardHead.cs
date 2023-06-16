@@ -10,7 +10,7 @@ namespace RPGTestC.Items.Quest
     {
         public GuardHead()
         {
-            IType = Type.QuestItem;
+            ItemType = Type.QuestItem;
             Name = "Голова Стража";
             Description = "Голова Стража Синего Источника. Тяжеловата, да и кровь ещё течёт.";
             Colour = ConsoleColor.Yellow;

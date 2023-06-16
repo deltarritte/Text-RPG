@@ -4,7 +4,7 @@ namespace RPGTestC.Events
 {
     public class Monster
     {
-        public enum MType : Int32
+        public enum MType : int
         {
             Standart,
             Poisonous,
@@ -15,7 +15,7 @@ namespace RPGTestC.Events
             Dark,
             Luminous
         }
-        enum AttackState : Int16
+        enum AttackState : short
         {
             Aggressive,
             Balanced,
@@ -27,9 +27,9 @@ namespace RPGTestC.Events
         public string Name = "Монстр";
         public int LVL = Player.LVL;
         public int effectCooldown = 0;
-        float MaxHP;
+        float MaxHP { get; }
         public float HP;
-        float bufDamage;
+        float baseDamage;
         public float Damage;
         public bool isInvincible = false;
         public MType Type = MType.Standart;
@@ -69,7 +69,7 @@ namespace RPGTestC.Events
 
             if (!blank)
             {
-                HP = (float)(20 * RPG.rnd.Next(110, 120) / 100f * Math.Pow(1.63d, LVL));
+                HP = (float)(20 * RPG.rnd.Next(110, 120) / 100f * Math.Pow(1.63d, LVL)); // Функция, которая даёт монстру ОЗ, примерно скейлящееся от атаки игрока (раньше так было, по крайней мере)
                 MaxHP = HP;
                 Damage = (float)Math.Round((10 + Math.Pow(2, LVL - 2)) * RPG.rnd.Next(2, 4));
             }
@@ -138,8 +138,8 @@ namespace RPGTestC.Events
                 else ActionChain[i] = Wait;
             }
         }
-        void SetDefaults() => bufDamage = Damage;
-        public void ResetDamage() => Damage = bufDamage;
+        void SetDefaults() => baseDamage = Damage;
+        public void ResetDamage() => Damage = baseDamage;
         public string GetActionChain()
         {
             string chain = "-";

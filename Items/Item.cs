@@ -15,11 +15,12 @@ namespace RPGTestC.Items
             Item,
             QuestItem
         }
-        public Type IType = Type.None;
+        public Type ItemType = Type.None;
 
         public int ID = 0;
         public int LVL = 0;
         public int MaxLVL = 0;
+        public int Value = 0;
         public string Prefix;
         public string Name;
         public string Description = "Нет описания";
@@ -35,9 +36,10 @@ namespace RPGTestC.Items
 
         public Item(Item item)
         {
-            IType = item.IType;
+            ItemType = item.ItemType;
             LVL = item.LVL;
             MaxLVL = item.MaxLVL;
+            Value = item.Value;
             Prefix = item.Prefix;
             Name = item.Name;
             Description = item.Description;

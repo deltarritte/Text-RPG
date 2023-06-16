@@ -4,7 +4,7 @@ namespace RPGTestC.Locations
 {
     public class Tower
     {
-        static string[] names = new string[] { "Олег", "Инорен", "Враног", "Уръян", "Многослов" };
+        static readonly string[] names = new string[] { "Олег", "Инорен", "Враног", "Уръян", "Многослов" };
         static public string mageName;
         static public bool wasIntroduced = false;
 

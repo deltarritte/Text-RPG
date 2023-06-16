@@ -11,16 +11,16 @@ namespace RPGTestC.UI
         {
             Console.Clear();
 
-            Console.WriteLine($"Текущее оружие: {Player.Inventory[0].GetName()} ({Player.Inventory[0].LVL} УР)" +
-                $"\n{Player.Inventory[0].Description}" +
-                $"\nУрон: {Player.Inventory[0].baseDamage} АТК");
+            Console.WriteLine($"Текущее оружие: {Player.Weapon.GetName()} ({Player.Weapon.LVL} УР)" +
+                $"\n{Player.Weapon.Description}" +
+                $"\nУрон: {Player.Weapon.baseDamage} АТК");
 
-            Console.WriteLine($"\nТекущая броня: {Player.Inventory[1].GetName()} ({Player.Inventory[1].LVL} УР)" +
-                $"\n{Player.Inventory[1].Description}" +
-                $"\nЗащита: {Player.Inventory[1].Defence} ЗАЩ");
+            Console.WriteLine($"\nТекущая броня: {Player.Armour.GetName()} ({Player.Armour.LVL} УР)" +
+                $"\n{Player.Armour.Description}" +
+                $"\nЗащита: {Player.Armour.Defence} ЗАЩ");
 
-            Console.WriteLine($"\nТекущий предмет: {Player.Inventory[2].GetName()}" +
-                $"\n{Player.Inventory[2].Description}");
+            Console.WriteLine($"\nТекущий предмет: {Player.Special.GetName()}" +
+                $"\n{Player.Special.Description}");
 
             Console.WriteLine("\n");
 
@@ -47,7 +47,7 @@ namespace RPGTestC.UI
                 case ConsoleKey.E:
                     buffer = Player.Passive_Inventory[index];
 
-                    switch (Player.Passive_Inventory[index].IType)
+                    switch (Player.Passive_Inventory[index].ItemType)
                     {
                         case Item.Type.Armour:
                             Player.Passive_Inventory[index] = Player.Inventory[1];

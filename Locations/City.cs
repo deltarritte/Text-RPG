@@ -9,7 +9,7 @@ namespace RPGTestC.Locations
     {
         #region Variables
 
-        public enum QuestState : Int16
+        public enum QuestState : short
         {
             Unknown,
             Known,
@@ -17,40 +17,44 @@ namespace RPGTestC.Locations
             Completed
         }
         static public QuestState currentPlotState = QuestState.Unknown;
+        enum Destination
+        {
+            City,
+            Healing,
+            Tavern
+        }
 
         static public bool wasInCity;
 
         static float CityEconomy;
-        static float BankTax;
+        //static float BankTax;
         static float HealTax;
         static float TavernTax;
         static double HealPrice;
         static double ChargePrice;
-        static double BankPrice;
+        //static double BankPrice;
         static double TavernPrice;
         static double ValueW;
         static double ValueA;
         static public float cityBank = 10000;
 
         #endregion
-
         static void UpdateEconomy()
         {
             CityEconomy = 1000 / cityBank;
 
-            BankTax = 1 + CityEconomy * 2;
+            //BankTax = 1 + CityEconomy * 2;
             HealTax = 1 + CityEconomy * 4;
             TavernTax = 1 + CityEconomy * 5;
 
-            BankPrice = Math.Round(10 * BankTax, 0);
+            //BankPrice = Math.Round(10 * BankTax, 0);
             HealPrice = Math.Round(10 * HealTax, 0);
             ChargePrice = Math.Round(2 * HealTax, 0);
             TavernPrice = Math.Round(200 * TavernTax);
 
-            ValueW = TavernPrice * (Inventory[0].LVL + 1); // Цена на улучшение оружия
-            ValueA = TavernPrice * (Inventory[1].LVL + 1); //        ...       брони
+            ValueW = TavernPrice * (Weapon.Value * Weapon.LVL + 1); // Цена на улучшение оружия
+            ValueA = TavernPrice * (Armour.Value * Armour.LVL + 1); //        ...       брони
         }
-
         static public void GoToCity()
         {
             UpdateEconomy();
@@ -65,33 +69,8 @@ namespace RPGTestC.Locations
                 wasInCity = true;
                 RPG.Dialogue("В городе можно вылечиться или посетить таверну.");
             }
-
-            Console.WriteLine("\nИгрок:" +
-                "\nHP: " + HP + "/" + MaxHP + " [" + RPG.HPLine + "] " +
-                "\nДеньги: " + Money);
-
-            Console.WriteLine("\nЧто будешь делать? Вылечиться - 1, Таверна - 2, Вернуться в лес - 0");
-
-            switch (Console.ReadLine())
-            {
-                case "1":
-                    GoHeal();
-                    break;
-
-                case "2":
-                    GoToTavern();
-                    break;
-
-                case "0":
-                    Console.Clear();
-                    break;
-
-                default:
-                    GoToCity();
-                    break;
-            }
+            ShowMenu();
         }
-
         static void GoHeal()
         {
             Console.WriteLine($"Лечение стоит {HealPrice} ({ChargePrice} за 1 заряд)." +
@@ -144,7 +123,6 @@ namespace RPGTestC.Locations
                     break;
             }
         }
-
         static public void GoToTavern()
         {
             int dialRand = RPG.rnd.Next(1, 100);
@@ -619,9 +597,10 @@ namespace RPGTestC.Locations
                     break;
             }
 
-            GoToCity();
-        }
+            if (questNum == 0) GoToCity();
+            else ShowMenu(Destination.Tavern);
 
+        }
         static public void GearUpgrade(bool free)
         {
             Console.Clear();
@@ -632,20 +611,20 @@ namespace RPGTestC.Locations
                     + "\nС каждым улучшением повышаю эффективность на 5%."
                     + "\n\nУ вас " + Money + " монет.", true, ConsoleColor.DarkYellow);
 
-            Console.WriteLine($"Текущие характеристики: {Inventory[0].baseDamage} АТК ({Inventory[0].LVL}/{Inventory[0].MaxLVL} УР)" +
-                           $"\n                         {Inventory[1].Defence} ЗАЩ ({Inventory[1].LVL}/{Inventory[1].MaxLVL} УР)");
+            Console.WriteLine($"Текущие характеристики: {Weapon.baseDamage} АТК ({Weapon.LVL}/{Weapon.MaxLVL} УР)" +
+                           $"\n                         {Armour.Defence} ЗАЩ ({Armour.LVL}/{Armour.MaxLVL} УР)");
 
             Console.WriteLine("Улучшить (+1 УР)");
-            if (Inventory[0].Upgradeable()) Console.WriteLine("Оружие - 1");
-            if (Inventory[1].Upgradeable()) Console.WriteLine("Броню - 2");
+            if (Weapon.Upgradeable()) Console.WriteLine("Оружие - 1");
+            if (Armour.Upgradeable()) Console.WriteLine("Броню - 2");
 
             switch (Console.ReadLine())
             {
                 case "1":
-                    if (Inventory[0].Upgradeable())
+                    if (Weapon.Upgradeable())
                     {
-                        Inventory[0].LVL += 1;
-                        Inventory[0].Upgrade();
+                        Weapon.LVL += 1;
+                        Weapon.Upgrade();
 
                         if (!free)
                         {
@@ -657,10 +636,10 @@ namespace RPGTestC.Locations
                     else goto default;
 
                 case "2":
-                    if (Inventory[1].Upgradeable())
+                    if (Armour.Upgradeable())
                     {
-                        Inventory[1].LVL += 1;
-                        Inventory[1].Upgrade();
+                        Armour.LVL += 1;
+                        Armour.Upgrade();
 
                         if (!free)
                         {
@@ -672,14 +651,13 @@ namespace RPGTestC.Locations
                     else goto default;
 
                 default:
-                    if (Inventory[0].Upgradeable() || Inventory[1].Upgradeable()) GearUpgrade(free);
+                    if (Weapon.Upgradeable() || Armour.Upgradeable()) GearUpgrade(free);
                     break;
             }
             UpdateEconomy();
 
             RPG.Dialogue("Охра", "Ещё увидимся.", false, ConsoleColor.DarkYellow);
         }
-
         static bool AcceptQuest()
         {
             Console.WriteLine("\nВзять задание? Да - 1, Нет - Любая другая клавиша");
@@ -693,6 +671,63 @@ namespace RPGTestC.Locations
             {
                 currentPlotState = QuestState.Known;
                 return false;
+            }
+        }
+
+        static int index = 0;
+        static string[] menuOptions = new string[] { "Сходить вылечиться", "Сходить в таверну", "Вернуться в лес" };
+        static void ShowMenu(Destination dest = Destination.City)
+        {
+            if (dest == Destination.Tavern) menuOptions = new string[] { "Улучшить предмет", "Вернуться в город", "Вернуться в лес" };
+
+            Console.WriteLine("\nИгрок:" +
+                "\nHP: " + HP + "/" + MaxHP + " [" + RPG.HPLine + "] " +
+                "\nДеньги: " + Money);
+
+            Console.WriteLine("\nЧто будешь делать?");
+            for (int i = 0; i < menuOptions.Length - 1; i++)
+            {
+                if (i == index) Console.WriteLine($"[{menuOptions[i]}]");
+                else Console.WriteLine(menuOptions[i]);
+            }
+            Console.WriteLine("W,S - Сменить вариант, E - Выбрать вариант");
+            MenuControls(dest);
+        }
+        static void MenuControls(Destination dest)
+        {
+            ConsoleKey key = Console.ReadKey().Key;
+            switch (key)
+            {
+                case ConsoleKey.W:
+                    if (index > 0) index--;
+                    break;
+
+                case ConsoleKey.S:
+                    if (index < menuOptions.Length - 1) index++;
+                    break;
+
+                case ConsoleKey.E:
+                    if (dest == Destination.Tavern) { break; }
+                    switch (index)
+                    {
+                        case 0:
+                            GoHeal();
+                            break;
+                        case 1:
+                            GoToTavern();
+                            break;
+                        case 2:
+                            Console.Clear();
+                            break;
+                        default:
+                            GoToCity();
+                            break;
+                    }
+                    break;
+
+                default:
+                    ShowMenu(dest);
+                    break;
             }
         }
     }

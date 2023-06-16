@@ -7,8 +7,8 @@ namespace RPGTestC.Items
     {
         public PotionBag()
         {
-            ID = 5;
-            IType = Type.Item;
+            ID = 0x010000;
+            ItemType = Type.Item;
             Name = "Сумка с зельями";
             Description = "Сумка с 4-мя видами зелий. Зелье, взятое из сумки - случайное. Будьте осторожны.";
         }

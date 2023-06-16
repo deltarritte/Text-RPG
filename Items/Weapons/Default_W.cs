@@ -6,8 +6,8 @@ namespace RPGTestC.Items.Weapons
     {
         public Default_W()
         {
-            ID = 3;
-            IType = Type.Weapon;
+            ID = 0x000100;
+            ItemType = Type.Weapon;
             MaxLVL = 3;
             Prefix = "Default";
             Name = "Sword";
